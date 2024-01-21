@@ -1,11 +1,6 @@
 #include "system.h"
 #include "micros.h"
 #include "debug.h"
-#include "disk.h"
-
-#include "settings.h"
-#include "engine.h"
-#include "ui.h"
 
 extern "C" {
 
@@ -36,17 +31,9 @@ int main(void)
 	sys.init();
 	micros.init();	// must be called before adc, display & sdio init
 	debug.init();
-	disk.init();
-	disk.mount();
 
-	settings.init();	// before ui & engine
-	ui.init();
-	engine.init();
-
-	// star timers
 
 	while (1) {
-		ui.process();
-		engine.process();
+
 	}
 }
