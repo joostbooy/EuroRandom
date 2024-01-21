@@ -20,7 +20,6 @@ extern "C" {
 			return;
 		}
 		TIM4->SR = ~TIM_IT_UPDATE;
-		//ui.poll();
 	}
 
 } //extern "C"
@@ -29,9 +28,8 @@ extern "C" {
 int main(void)
 {
 	sys.init();
-	micros.init();	// must be called before adc, display & sdio init
+	micros.init();	
 	debug.init();
-
 
 	while (1) {
 
