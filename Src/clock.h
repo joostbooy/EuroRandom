@@ -63,16 +63,5 @@ private:
 	}
 
 };
-inline float curve(float shape) {
-	uint16_t intergral = static_cast<uint16_t>(phase_);
-	float fractional = phase_ - intergral;
-
-	const float *lut_a = &lut_exp[intergral];
-	const float *lut_b = &lut_inv_exp[intergral];
-	float a = Dsp::cross_fade(*lut_a, *(lut_a + 1), fractional);
-	float b = Dsp::cross_fade(*lut_b, *(lut_b + 1), fractional);
-
-	return Dsp::cross_fade(a, b, shape);
-}
 
 #endif
