@@ -1,6 +1,9 @@
 #ifndef Ramp_h
 #define Ramp_h
 
+#include "dsp.h"
+
+
 class Ramp {
 
 public:
@@ -17,8 +20,8 @@ public:
 
 	void init() {
 		phase_ = 0.f;
-		last_ = 0.f;
-		next_ = 1.f;
+		last_value_ = 0.f;
+		target_value_ = 1.f;
 		stage_ = RISING;
 	}
 
@@ -26,10 +29,17 @@ public:
 		return stage_;
 	}
 
-	float tick(Mode mode, float skew, float shape) {
+	void reset() {
+		phase_ = 0.f;
+	}
+
+	float tick(Mode mode, float freq, float skew, float shape) {
+		mode_ = mode;
+		inc_ = freq;
+
 		float triangle_ = triangle(phase_, skew);
 		float curve_ = curve(triangle_, shape);
-		float value_ = Dsp::cross_fade(last_, next_, curve_);
+		value_ = Dsp::cross_fade(last_value_, target_value_, curve_);
 
 		phase_ += inc_;
 		if (phase_ >= 1.f)  {
@@ -39,35 +49,36 @@ public:
 		return value_;
 	}
 
-
 private:
 
 	float phase_;
 	float inc_;
-	float next_;
-	float last_;
+	float value_;
+	float last_value_;
+	float target_value_;
+	Mode mode_;
 	Stage stage_;
 
-	inline void set_stage(Stage stage, Mode mode) {
+	inline void set_stage(Stage stage) {
 		if (stage_ != stage) {
 			stage_ = stage;
 
-			last_ = value_;
+			last_value_ = value_;
 			if (value == RISING) {
-				next_ = mode == RANDOM ? Rng::reciprocal(last, 1.f) : 1.f;
+				target_value_ = mode_ == RANDOM ? Rng::reciprocal(last, 1.f) : 1.f;
 			} else {
-				next_ = mode == RANDOM ? Rng::reciprocal(0.f, last) : 0.f;
+				target_value_ = mode_ == RANDOM ? Rng::reciprocal(0.f, last) : 0.f;
 			}
 		}
 	}
 
 	inline float triangle(float phase, float skew) {
 		if (phase < skew) {
-			float inc_up = 1.0f / skew;
-			return phase * inc_up;
+			set_stage(RISING);
+			return phase * (1.0f / skew);
 		} else {
-			float inc_down = 1.0f / (1.0f - skew);
-			return 1.0f - (phase - skew) * inc_down;
+			set_stage(FALLING);
+			return 1.0f - (phase - skew) * (1.0f / (1.0f - skew));
 		}
 	}
 
