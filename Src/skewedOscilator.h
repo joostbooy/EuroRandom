@@ -13,7 +13,7 @@ public:
 		last_value_ = 0.f;
 		target_value_ 0.f;
 
-		ammount_ = 0.f;
+		amount_ = 0.f;
 		oscillator_.init();
 	}
 
@@ -25,13 +25,13 @@ public:
 		return oscillator_.euclidianPattern();
 	}
 
-	void set_ammount(float value) {
-		ammount_ = value;
+	void set_amount(float value) {
+		amount_ = value;
 	}
 
 	float tick() {
 		float phase_ = oscillator_.phase();
-		float skew_ = skew(phase_, ammount_);
+		float skew_ = skew(phase_, amount_);
 		value_ = Dsp::cross_fade(last_value_, target_value_, skew_);
 
 		oscillator_.tick();
@@ -41,7 +41,7 @@ public:
 
 private:
 	bool stage_;
-	float ammount_;
+	float amount_;
 	float value_;
 	float last_value_;
 	float target_value_;
