@@ -6,7 +6,7 @@ class EuclidianPattern {
 public:
 
 	void init() {
-		update(32, 32);
+		update(32, 32, 0);
 		reset();
 	}
 
@@ -14,50 +14,37 @@ public:
 		position_ = 0;
 	}
 
-	void update(int steps, int pulses) {
+	void update(int steps, int pulses, int shifts) {
 		steps_ = stmlib::clip(2, kMaxSteps - 1, steps);
 		pulses_ = stmlib::clip(1, steps_, pulses);
-		
-		// pattern
+		shifts_ = stmlib::clip(0, pulses_, shifts);
+
+		int count = 0;
 		int bucket = 0;
-		uint32_t bits = 0;
+		int index = shifts_;
 
 		for (int i = 0; i < steps_; ++i) {
+			++count;
 			bucket += pulses_;
+
 			if (bucket >= steps_) {
 				bucket -= steps_;
-				bits |= (1 << i);
-			}
-		}
-
-		// duration
-		int ticks = 0;
-		int index = pulses_ - 1;
-
-		for (int i = 0; i < steps_; ++i) {
-			++ticks;
-			if (bits & (1 << i)) {
-				duration_[index--] = ticks;
-				ticks = 0;
+				duration_[++index % pulses_] = count;
+				count = 0;
 			}
 		}
 	}
 
 	int next_duration() {
-		int value = duration_[position_];
-
-		++position_;
-		if (position_ >= pulses_) {
-			position_ = 0;
-		}
-
-		return value;
+		position_ %= pulses_;
+		return duration_[position_++];
 	}
 
 private:
 	static const size_t kMaxSteps = 32;
 
 	int steps_;
+	int shifts_;
 	int pulses_;
 	int position_;
 	int duration_[kMaxSteps];
