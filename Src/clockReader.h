@@ -47,7 +47,7 @@ private:
 				debouncer |= 1;
 			}
 		}
-		return debounce == 0xFE;
+		return debouncer == 0xFE;
 	}
 
 };
