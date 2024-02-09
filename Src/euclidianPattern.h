@@ -13,7 +13,7 @@ public:
 	void reset() {
 		position_ = 0;
 	}
-
+	
 	void update(int steps, int pulses, int shifts) {
 		steps_ = stmlib::clip(2, kMaxSteps - 1, steps);
 		pulses_ = stmlib::clip(1, steps_, pulses);
