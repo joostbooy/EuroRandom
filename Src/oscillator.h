@@ -13,6 +13,10 @@ public:
 		phase_ = 0.f;
 	}
 
+	Gate &gate() {
+		return gate_;
+	}
+
 	EuclidianPattern &euclidianPattern() {
 		return euclidianPattern_;
 	}
@@ -20,6 +24,10 @@ public:
 	void reset() {
 		phase_ = 0.f;
 		euclidianPattern_.reset();
+	}
+
+	uint32_t segment_ticks() {
+		return segment_ticks_;
 	}
 
 	void set_segment_ticks(uint32_t value) {
@@ -37,7 +45,6 @@ public:
 			inc_ = segment_ticks_ / euclidianPattern.next_duration();
 			return true;
 		}
-
 		return false;
 	}
 
