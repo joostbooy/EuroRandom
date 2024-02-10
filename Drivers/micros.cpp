@@ -5,7 +5,7 @@ Micros micros;
 void Micros::init() {
 	TIM_HandleTypeDef TimHandle;
 
-	TimHandle.Instance = TIM5;
+	TimHandle.Instance = TIM2;
 	TimHandle.Init.Prescaler = (F_CPU / 1000000 / 4) - 1;
 	TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
 	TimHandle.Init.Period = 0xFFFFFFFF;

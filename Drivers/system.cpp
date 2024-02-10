@@ -20,6 +20,7 @@ void Sys::init() {
 
 	RCC_OscInitTypeDef RCC_OscInitStruct = {0};
 	RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+	RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
 	__HAL_RCC_SYSCFG_CLK_ENABLE();
 	__HAL_RCC_PWR_CLK_ENABLE();

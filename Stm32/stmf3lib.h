@@ -3,8 +3,9 @@
 
 #include "stm32f3xx.h"
 
-#include <stdlib.h>
-#include <stdint.h>
+//#include <cstddef>
+//#include <stdlib.h>
+//#include <stdint.h>
 //#include <cstring>
 //#include <cmath>
 

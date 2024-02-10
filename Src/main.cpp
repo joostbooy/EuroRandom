@@ -1,9 +1,9 @@
 #include "system.h"
 #include "micros.h"
 #include "debug.h"
-
-#include "clockReader.h"
-#include "oscillator.h"
+#include "dac.h"
+#include "adc.h"
+#include "gateIo.h"
 
 extern "C" {
 
@@ -18,16 +18,16 @@ extern "C" {
 	void SysTick_Handler(void) { }
 
 	// 1Khz
-	void TIM4_IRQHandler(void) {
-		if (!(TIM4->SR & TIM_IT_UPDATE)) {
-			return;
-		}
-		TIM4->SR = ~TIM_IT_UPDATE;
-	}
-
-//	void DMA1_Channel5_IRQHandler(void) {
-
+//	void TIM2_IRQHandler(void) {
+//		if (!(TIM4->SR & TIM_IT_UPDATE)) {
+//			return;
+//		}
+//		TIM4->SR = ~TIM_IT_UPDATE;
 //	}
+
+	void DMA1_Channel5_IRQHandler(void) {
+
+	}
 
 } //extern "C"
 
@@ -35,9 +35,12 @@ int main(void)
 {
 	sys.init();
 	micros.init();
+	dac.init();
+	adc.init();
+	gateIo.init();
 	debug.init();
 
-	clockReader.init();
+	//clockReader.init();
 	//oscillator.init();
 	//oscillator.euclidianPattern().init();
 

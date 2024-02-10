@@ -25,7 +25,8 @@ TABLE_DIR = LookupTables
 # model specifics
 #######################################
 
-MODEL_DEF = -DSTM32F301xx
+#DSTM32F301xx
+MODEL_DEF = -DSTM32F301x8
 F_CPU = 72000000UL
 
 CMSIS_DIR = $(STM_REPO)/Drivers/CMSIS
@@ -149,6 +150,7 @@ $(OPT) \
 -MMD -MP -MF"$(@:%.o=%.d)"
 #-fasm
 #-flto
+#-Wfatal-errors
 
 # CPP flags
 CPPFLAGS = \

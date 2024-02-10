@@ -9,7 +9,7 @@ public:
 	void init();
 
 	inline volatile uint32_t read() {
-		return TIM5->CNT;
+		return TIM2->CNT;
 	}
 
 	void delay(uint32_t us) {

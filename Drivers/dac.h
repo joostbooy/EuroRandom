@@ -55,47 +55,8 @@ private:
 	volatile uint8_t dummy;
 
 	void writeDac(uint8_t command, uint8_t address, uint16_t data, uint8_t function) {
-		uint8_t b1 = command;
-		uint8_t b2 = (address << 4) | (data >> 12);
-		uint8_t b3 = data >> 4;
-		uint8_t b4 = (data & 0xf) << 4 | function;
-
-		// sync_pin LOW
-		GPIOA->BSRR = GPIO_PIN_4 << 16;
-		asm("NOP");
-
-		spi_write(b1);
-		spi_write(b2);
-		spi_write(b3);
-		spi_write(b4);
-		asm("NOP");
-
-		// sync_pin HIGH
-		GPIOA->BSRR = GPIO_PIN_4;
-		asm("NOP");
+	
 	}
-
-	void reset() {
-		writeDac(RESET_POWER_ON, 0, 0, 0);
-		micros.delay(50);
-	}
-
-	void setInternalRef(bool enabled) {
-		writeDac(SETUP_INTERNAL_REF, 0, 0, enabled ? 1 : 0);
-	}
-
-	void setClearCode(ClearCode code) {
-		writeDac(LOAD_CLEAR_CODE_REGISTER, 0, 0, code);
-	}
-
-	void spi_write(uint8_t data) {
-		while (!(SPI1->SR & SPI_FLAG_TXE));
-		SPI1->DR = data;
-
-		while (!(SPI1->SR & SPI_FLAG_RXNE));
-		dummy = SPI1->DR;
-	}
-
 };
 
 extern Dac dac;
