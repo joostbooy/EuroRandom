@@ -16,9 +16,8 @@ OPT = -O2
 
 BUILD_DIR = Build
 
-LIB_DIR = /Users/joostbooy/Desktop/Code/stm32/lib
-STM_REPO = /Users/joostbooy/STM32Cube/Repository/STM32Cube_FW_F4_V1.26.1
-UTILS_DIR = $(LIB_DIR)/utils
+STM_REPO = /Users/joostbooy/STM32Cube/Repository/STM32Cube_FW_F3_V1.11.4
+UTILS_DIR = /Users/joostbooy/Desktop/Code/stm32/lib/utils
 TABLE_DIR = LookupTables
 
 
@@ -26,17 +25,17 @@ TABLE_DIR = LookupTables
 # model specifics
 #######################################
 
-MODEL_DEF = -DSTM32F429xx
-F_CPU = 168000000UL
+MODEL_DEF = -DSTM32F301xx
+F_CPU = 72000000UL
 
 CMSIS_DIR = $(STM_REPO)/Drivers/CMSIS
-HAL_DIR = $(STM_REPO)/Drivers/STM32F4xx_HAL_Driver
-DEVICE_DIR = $(CMSIS_DIR)/Device/ST/STM32F4xx
+HAL_DIR = $(STM_REPO)/Drivers/STM32F3xx_HAL_Driver
+DEVICE_DIR = $(CMSIS_DIR)/Device/ST/STM32F3xx
 
 CPU = -mcpu=cortex-m4
-LDSCRIPT = stm32/STM32F429VGTx_FLASH.ld
-STARTUP = stm32/startup_stm32f429xx.s
-SYSTEM = $(DEVICE_DIR)/Source/Templates/system_stm32f4xx.c
+LDSCRIPT = stm32/STM32F301C8Tx_FLASH.ld
+STARTUP = stm32/startup_stm32f301x8.s
+SYSTEM = $(DEVICE_DIR)/Source/Templates/system_stm32f3xx.c
 
 FPU = -mfpu=fpv4-sp-d16
 FLOAT_ABI = -mfloat-abi=hard

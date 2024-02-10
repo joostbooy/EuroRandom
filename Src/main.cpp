@@ -2,6 +2,9 @@
 #include "micros.h"
 #include "debug.h"
 
+#include "clockReader.h"
+#include "oscillator.h"
+
 extern "C" {
 
 	void NMI_Handler() { }
@@ -22,14 +25,21 @@ extern "C" {
 		TIM4->SR = ~TIM_IT_UPDATE;
 	}
 
-} //extern "C"
+//	void DMA1_Channel5_IRQHandler(void) {
 
+//	}
+
+} //extern "C"
 
 int main(void)
 {
 	sys.init();
-	micros.init();	
+	micros.init();
 	debug.init();
+
+	clockReader.init();
+	//oscillator.init();
+	//oscillator.euclidianPattern().init();
 
 	while (1) {
 
