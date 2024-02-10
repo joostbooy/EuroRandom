@@ -11,9 +11,9 @@ void Adc::init(){
 
 	//ADC Pins
 	/**ADC1 GPIO Configuration
-	PA2     ------> ADC1_IN3
-	PA6     ------> ADC1_IN10
-	PB0     ------> ADC1_IN11
+	PA2     ------> ADC1_IN3  -> Accent pot
+	PA6     ------> ADC1_IN10 -> Shift pot
+	PB0     ------> ADC1_IN11 -> MUX pots
 	*/
 	GPIO_InitStruct.Pin = GPIO_PIN_2 | GPIO_PIN_6;
 	GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
