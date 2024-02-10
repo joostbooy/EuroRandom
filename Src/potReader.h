@@ -6,14 +6,14 @@ class PotReader {
 public:
 
 	enum Id {
-		CURVE_SHAPE,
-		CURVE_FILL,
-		PULSE_WIDTH,
-		PULSE_FILL,
 		SKEW_AMMOUNT,
-		SKEW_FILL,
-		TRIANGLE_DEPTH,
 		TRIANGLE_FILL,
+		TRIANGLE_DEPTH,
+		SKEW_FILL,
+		PULSE_FILL,
+		CURVE_SHAPE,
+		PULSE_WIDTH,
+		CURVE_FILL,
 		ACCENTS,
 		SHIFT,
 
@@ -26,7 +26,7 @@ public:
 		}
 	}
 
-	void update() {
+	void poll() {
 		if (adc.ready()) {
 			int channel = adc.curr_channel();
 			float in = adc.read() / 4095.f;
