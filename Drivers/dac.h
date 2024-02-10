@@ -1,7 +1,7 @@
 #ifndef Dac_h
 #define Dac_h
 
-#include "stmf4lib.h"
+#include "stmf3lib.h"
 #include "micros.h"
 
 // https://github.com/westlicht/performer/blob/master/src/platform/stm32/drivers/Dac.h

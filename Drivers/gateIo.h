@@ -1,6 +1,8 @@
 #ifndef GateIo_h
 #define GateIo_h
 
+#include "stmf3lib.h"
+
 class GateIo {
 
 public:
@@ -50,7 +52,7 @@ public:
 	void write_noise(bool state) {
 		GPIOA->BSRR = state ? GPIO_PIN_7 : GPIO_PIN_7 << 16;
 	}
-	
+
 	void write_clock_led(bool state) {
 		GPIOB->BSRR = state ? GPIO_PIN_9 : GPIO_PIN_9 << 16;
 	}
