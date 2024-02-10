@@ -1,8 +1,5 @@
 #include "gateIo.h"
 
-
-
-
 void GateIo::init() {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 
