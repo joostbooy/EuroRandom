@@ -60,12 +60,13 @@ private:
 	inline void set_stage(bool stage) {
 		if (stage_ != stage) {
 			stage_ = stage;
-			last_value_ = value_;
 
 			if (stage) {
-				target_value_ = get_random(last_value_, 1.f);
+				target_value_ = value_;
+				last_value_ = get_random(0.f, last_value_);
 			} else {
-				target_value_ = get_random(0.f, last_value_);
+				last_value_ = value_;
+				target_value_ = get_random(last_value_, 1.f);
 			}
 		}
 	}
