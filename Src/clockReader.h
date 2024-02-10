@@ -18,7 +18,7 @@ public:
 
 	uint32_t read() {
 		last_state_ = curr_state_;
-		curr_state_ = debounce(GPIOA->BSRR & GPIO_PIN_7);
+		curr_state_ = debounce(gateIo.read_clock());
 
 		if (curr_state_ == 1 && last_state_ == 0) {
 			interval_ = curr_tick - last_tick_;
