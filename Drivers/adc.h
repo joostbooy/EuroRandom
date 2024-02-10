@@ -30,15 +30,16 @@ public:
 		uint32_t reg = 0;
 
 		if (channel_ < kNumMuxChannels) {
-			ADC1->SQR3 = ADC_CHANNEL_5;
-			channel_ & 0x01 ? reg |= GPIO_PIN_2 : reg |= GPIO_PIN_2 << 16;
-			channel_ & 0x02 ? reg |= GPIO_PIN_3 : reg |= GPIO_PIN_3 << 16;
-			channel_ & 0x04 ? reg |= GPIO_PIN_4 : reg |= GPIO_PIN_4 << 16;
-			GPIOE->BSRR = reg;
-		} else if (channel_ == 8) {
-			ADC1->SQR3 = ADC_CHANNEL_9;
-		} else {
+			channel_ & 0x01 ? reg |= GPIO_PIN_1 : reg |= GPIO_PIN_1 << 16;
+			channel_ & 0x02 ? reg |= GPIO_PIN_2 : reg |= GPIO_PIN_2 << 16;
+			channel_ & 0x04 ? reg |= GPIO_PIN_10 : reg |= GPIO_PIN_10 << 16;
+			GPIOB->BSRR = reg;
+
 			ADC1->SQR3 = ADC_CHANNEL_11;
+		} else if (channel_ == 8) {
+			ADC1->SQR3 = ADC_CHANNEL_3;
+		} else {
+			ADC1->SQR3 = ADC_CHANNEL_10;
 		}
 
 		// start converion
