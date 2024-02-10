@@ -9,11 +9,11 @@ public:
     void init();
 
 	inline bool read() {
-		return GPIOE->IDR & GPIO_PIN_0;
+		return GPIOB->IDR & GPIO_PIN_7;
 	}
 
 	inline void write(bool state) {
-        GPIOE->BSRR = state ? GPIO_PIN_1 : GPIO_PIN_1 << 16;
+        GPIOB->BSRR = state ? GPIO_PIN_6 : GPIO_PIN_6 << 16;
     }
 
     inline void toggle() {
