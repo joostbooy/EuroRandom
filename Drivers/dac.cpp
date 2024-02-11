@@ -2,7 +2,8 @@
 
 Dac dac;
 
-void Dac::init() {
+void Dac::init(uint16_t* (*callback)(size_t)) {
+	callback_ = callback;
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 
 	/**I2S2 GPIO Configuration
@@ -38,19 +39,37 @@ void Dac::init() {
 	hdma_spi2_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
 	hdma_spi2_tx.Init.PeriphInc = DMA_PINC_DISABLE;
 	hdma_spi2_tx.Init.MemInc = DMA_MINC_ENABLE;
-	hdma_spi2_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-	hdma_spi2_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-	hdma_spi2_tx.Init.Mode = DMA_NORMAL;
-	hdma_spi2_tx.Init.Priority = DMA_PRIORITY_LOW;
+	hdma_spi2_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
+	hdma_spi2_tx.Init.MemDataAlignment = DMA_PDATAALIGN_WORD;
+	hdma_spi2_tx.Init.Mode = DMA_CIRCULAR;
+	hdma_spi2_tx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+	//hdma_spi2_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
 	HAL_DMA_Init(&hdma_spi2_tx);
 	//__HAL_LINKDMA(i2sHandle,hdmatx,hdma_spi2_tx);
-
+	//HAL_I2S_Transmit_DMA(&hsai_BlockB1, (uint8_t*)dma_buffer_, kBufferSize / 2);
 
 	HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 0, 0);
 	HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
 
-	//	reset();
-	//	setClearCode(ClearIgnore);
-	//	setInternalRef(true);
-	//	writeDac(POWER_DOWN_UP_DAC, 0, 0, 0xff);
+
+	//DMA1->HIFCR |= DMA_HIFCR_CTCIF5 | DMA_HIFCR_CHTIF5 | DMA_HIFCR_CTEIF5 | DMA_HIFCR_CDMEIF5 | DMA_HIFCR_CFEIF5;
+	//DMA1_Stream5->PAR = reinterpret_cast<uint32_t>(&SPI2->DR);
+	//DMA1_Stream5->M0AR = reinterpret_cast<uint32_t>(&buffer_[0]);
+	//DMA1_Stream5->NDTR = size_;
+	//DMA1_Stream5->CR |= DMA_SxCR_EN;
+	//SPI2->CR2 |= SPI_CR2_TXDMAEN;
+}
+
+// I2S DMA 2.75 kHz (samplerate / buffer size)
+extern "C" {
+	void DMA1_Channel5_IRQHandler(void) {
+		uint32_t flags = DMA1->ISR;
+		DMA1->IFCR |= DMA_IFCR_CTCIF5 | DMA_IFCR_CHTIF5;
+
+		if (flags & DMA_ISR_TCIF5) {
+			dac.fill(1);
+		} else if (flags & DMA_ISR_HTIF5) {
+			dac.fill(0);
+		}
+	}
 }
