@@ -10,7 +10,7 @@ public:
 	void init();
 
 	inline bool ready() {
-		return 0;//ADC1->SR & ADC_SR_EOC;
+		return ADC1->ISR & ADC_ISR_EOC;
 	}
 
 	inline uint16_t read() {
@@ -43,7 +43,7 @@ public:
 		}
 
 		// start converion
-		//ADC1->CR2 |= ADC_CR2_SWSTART;
+		ADC1->CR |= ADC_CR_ADSTART;
 	}
 
 private:
