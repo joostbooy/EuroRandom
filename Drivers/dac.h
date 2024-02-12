@@ -2,22 +2,27 @@
 #define Dac_h
 
 #include "stmf3lib.h"
-#include "micros.h"
 
 class Dac {
 
 public:
 
-	void init(uint16_t* (*callback)(size_t));
+	struct Buffer {
+		uint16_t channel[4];
+	};
 
-	void fill(int offset) {
-		uint16_t* sample_buffer = callback_(kBufferSize);
-		uint32_t* dma_buffer = &dma_buffer_[offset * kBufferSize];
+	void init();
+	void start(void(*callback)(Buffer*, size_t));
+
+	void fill(const size_t offset) {
+		callback_(buffer_, kBlockSize);
+
+		const size_t index = offset * kBlockSize;
+		uint32_t *ptr = &dma_buffer_[index];
 
 		for (size_t i = 0; i < kBlockSize; ++i) {
-			for (size_t channel = 0; channel < kNumChannels; ++channel) {
-				uint16_t sample = sample_buffer[(channel * kBlockSize) + i];
-				*dma_buffer++ = (1 << 28) | (channel << 25) | (sample << 8);
+			for (size_t chn = 0; chn < kNumChannels; ++chn) {
+				*ptr++ = (1 << 28) | (chn << 25) | (buffer_[i].channel[chn] << 8);
 			}
 		}
 	}
@@ -25,11 +30,12 @@ public:
 private:
 	static const size_t kBlockSize = 16;
 	static const size_t kNumChannels = 4;
-	static const size_t kBufferSize = kBlockSize * kNumChannels;
+	static const size_t kDmaBufferSize = kBlockSize * kNumChannels * 2;
 
-	uint32_t dma_buffer_[2 * kBufferSize];
+	Buffer buffer_[kBlockSize];
+	uint32_t dma_buffer_[kDmaBufferSize];
 
-	typedef uint16_t* (*Callback)(size_t);
+	typedef void(*Callback)(Buffer*, size_t);
 	Callback callback_;
 };
 
