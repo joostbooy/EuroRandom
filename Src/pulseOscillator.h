@@ -1,6 +1,9 @@
 #ifndef PulseOscillator_h
 #define PulseOscillator_h
 
+#include "oscillator.h"
+#include "rng.h"
+
 class PulseOscillator {
 
 public:
@@ -15,6 +18,10 @@ public:
 	void reset() {
 		stage_ = 0;
 		oscillator_.reset();
+	}
+
+	void set_segment_ticks(uint32_t value) {
+		oscillator_.set_segment_ticks(value);
 	}
 
 	EuclidianPattern &euclidianPattern() {

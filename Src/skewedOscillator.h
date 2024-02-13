@@ -11,7 +11,7 @@ public:
 		stage_ = 0;
 		value_ = 0.f;
 		last_value_ = 0.f;
-		target_value_ 0.f;
+		target_value_ = 0.f;
 
 		amount_ = 0.f;
 		oscillator_.init();
@@ -19,6 +19,10 @@ public:
 
 	void reset() {
 		oscillator_.reset();
+	}
+
+	void set_segment_ticks(uint32_t value) {
+		oscillator_.set_segment_ticks(value);
 	}
 
 	EuclidianPattern &euclidianPattern() {

@@ -10,7 +10,7 @@ public:
 	void init() {
 		value_ = 0.f;
 		last_value_ = 0.f;
-		target_value_ 0.f;
+		target_value_ = 0.f;
 
 		depth_ = 0.f;
 		oscillator_.init();
@@ -18,6 +18,10 @@ public:
 
 	void reset() {
 		oscillator_.reset();
+	}
+
+	void set_segment_ticks(uint32_t value) {
+		oscillator_.set_segment_ticks(value);
 	}
 
 	EuclidianPattern &euclidianPattern() {
@@ -32,7 +36,7 @@ public:
 		float phase_ = oscillator_.phase();
 		float triangle_ = triangle(phase_);
 		float triangle_random_ = Dsp::cross_fade(last_value_, target_value_, triangle_);
-		value = Dsp::cross_fade(triangle_, triangle_random_, depth_);
+		value_ = Dsp::cross_fade(triangle_, triangle_random_, depth_);
 
 		oscillator_.tick();
 

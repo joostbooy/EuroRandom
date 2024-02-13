@@ -1,6 +1,8 @@
 #ifndef CurvedOscillator_h
 #define CurvedOscillator_h
 
+#include "lookupTables.h"
+
 class CurvedOscillator {
 
 public:
@@ -8,7 +10,7 @@ public:
 	void init() {
 		value_ = 0.f;
 		last_value_ = 0.f;
-		target_value_ 0.f;
+		target_value_ = 0.f;
 
 		shape_ = 0.f;
 		oscillator_.init();
@@ -16,6 +18,10 @@ public:
 
 	void reset() {
 		oscillator_.reset();
+	}
+
+	void set_segment_ticks(uint32_t value) {
+		oscillator_.set_segment_ticks(value);
 	}
 
 	EuclidianPattern &euclidianPattern() {
@@ -35,6 +41,8 @@ public:
 			last_value_ = value_;
 			target_value_ = Rng::reciprocal();
 		}
+
+		return value_;
 	}
 
 private:
