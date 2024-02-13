@@ -11,20 +11,19 @@ void Ui::init() {
 }
 
 void Ui::debounce(SwitchId id, bool state) {
-	debounce_[id] <<= 1;
+	sw_raw_[id] <<= 1;
 	if (state) {
-		debounce_[id] |= 1;
+		sw_raw_[id] |= 1;
 	}
 
-	if (debounce_[id] == 0x00 || debounce_[id] == 0xFF) {
-		sw_state_[id] = debounce_[id];
+	if (sw_raw_[id] == 0x80) {
+		sw_state_[id] = 1;
+	} else if (sw_raw_[id] == 0x01) {
+		sw_state_[id] = 0;
 	}
 }
 
-void Ui::poll() {
-	debounce(BURST_INSERT, gateIo.read_burst_insert());
-	debounce(TRIGGER_INSERT, gateIo.read_trigger_insert());
-
+void Ui::update_pots() {
 	if (adc.ready()) {
 		int channel = adc.curr_channel();
 		float in = adc.read() / 4095.f;
@@ -34,6 +33,16 @@ void Ui::poll() {
 
 		adc.convert_next_channel();
 	}
+}
+
+void Ui::update_swiches() {
+	sw_state_[RESET] = gateIo.read_reset();
+	sw_state_[BURST] = gateIo.read_burst();
+	sw_state_[TRIGGER] = gateIo.read_trigger();
+
+	debounce(BURST_INSERT, gateIo.read_burst_insert());
+	debounce(TRIGGER_INSERT, gateIo.read_trigger_insert());
+	debounce(CLOCK, gateIo.read_clock());
 }
 
 float Ui::read_pot(PotId id) {

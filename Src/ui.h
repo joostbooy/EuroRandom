@@ -13,6 +13,11 @@ public:
 	enum SwitchId {
 		BURST_INSERT,
 		TRIGGER_INSERT,
+		CLOCK,
+		// No debounce
+		RESET,
+		BURST,
+		TRIGGER,
 
 		NUM_SWITCHES
 	};
@@ -34,14 +39,17 @@ public:
 
 
 	void init();
-	void poll();
+	void update_pots();
+	void update_swiches();
 	float read_pot(PotId);
 	bool read_switch(SwitchId);
 
 private:
+	static const size_t kNumDebounceSwitches = 3;
+
 	float pot_value_[NUM_POTS];
 	bool sw_state_[NUM_SWITCHES];
-	uint8_t debounce_[NUM_SWITCHES];
+	uint8_t sw_raw_[kNumDebounceSwitches];
 
 	void debounce(SwitchId, bool);
 };
