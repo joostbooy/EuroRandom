@@ -5,6 +5,20 @@
 #include "adc.h"
 #include "gateIo.h"
 
+#include "ui.h"
+#include "clockReader.h"
+#include "pulseOscillator.h"
+#include "triangleOscillator.h"
+#include "skewedOscillator.h"
+#include "curvedOscillator.h"
+
+Ui ui;
+ClockReader clockReader;
+PulseOscillator pulseOscillator;
+TriangleOscillator triangleOscillator;
+SkewedOscillator skewedOscillator;
+CurvedOscillator curvedOscillator;
+
 extern "C" {
 
 	void NMI_Handler() { }
@@ -17,32 +31,58 @@ extern "C" {
 	void PendSV_Handler() { }
 	void SysTick_Handler(void) { }
 
-	// 1Khz
-//	void TIM2_IRQHandler(void) {
-//		if (!(TIM4->SR & TIM_IT_UPDATE)) {
-//			return;
-//		}
-//		TIM4->SR = ~TIM_IT_UPDATE;
-//	}
+} //extern "C"
 
-	void DMA1_Channel5_IRQHandler(void) {
+uint8_t ui_prescaler = 0;
 
+void fill(Dac::Buffer *buffer, const size_t size) {
+	// Update ui
+	ui.update_pots();
+
+	if (!(++ui_prescaler & 3)) {
+		ui.update_swiches();
 	}
 
-} //extern "C"
+	// Update clock
+	clockReader.tick(ui.read_switch(Ui::CLOCK));
+
+	pulseOscillator.set_segment_ticks(clockReader.interval());
+	triangleOscillator.set_segment_ticks(clockReader.interval());
+	skewedOscillator.set_segment_ticks(clockReader.interval());
+	curvedOscillator.set_segment_ticks(clockReader.interval());
+
+	// Set trigger outs
+	gateIo.write_burst(0);
+	gateIo.write_trigger(0);
+	gateIo.write_gate(0);
+	gateIo.write_noise(0);
+
+	// Render oscillators
+	for (size_t i = 0; i < size; ++i) {
+		buffer[i].channel[0] = pulseOscillator.tick();		// Pulse
+		buffer[i].channel[1] = triangleOscillator.tick();	// Triangle
+		buffer[i].channel[2] = skewedOscillator.tick();		// Skew
+		buffer[i].channel[3] = curvedOscillator.tick();		// Curve
+	}
+}
 
 int main(void)
 {
 	sys.init();
 	micros.init();
-	dac.init();
 	adc.init();
+	dac.init();
 	gateIo.init();
 	debug.init();
 
-	//clockReader.init();
-	//oscillator.init();
-	//oscillator.euclidianPattern().init();
+	ui.init();
+
+	pulseOscillator.init();
+	triangleOscillator.init();
+	skewedOscillator.init();
+	curvedOscillator.init();
+
+	dac.start(&fill);
 
 	while (1) {
 
