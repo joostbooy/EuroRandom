@@ -2,6 +2,7 @@
 #define Oscillator_h
 
 #include "dsp.h"
+#include "euclidianPattern.h"
 
 
 class Oscillator {
@@ -11,11 +12,12 @@ public:
 	void init() {
 		inc_ = 0.1;
 		phase_ = 0.f;
+		euclidianPattern_.init();
 	}
 
-	Gate &gate() {
-		return gate_;
-	}
+	//Gate &gate() {
+	//	return gate_;
+	//}
 
 	EuclidianPattern &euclidianPattern() {
 		return euclidianPattern_;
@@ -42,7 +44,7 @@ public:
 		phase_ += inc_;
 		if (phase_ >= 1.f)  {
 			phase_ = 0.f;
-			inc_ = segment_ticks_ / euclidianPattern.next_duration();
+			inc_ = segment_ticks_ / euclidianPattern_.next_duration();
 			return true;
 		}
 		return false;
