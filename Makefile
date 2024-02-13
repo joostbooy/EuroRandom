@@ -65,6 +65,7 @@ $(wildcard Src/*.cpp) \
 $(wildcard Drivers/*.cpp) \
 $(wildcard Drivers/Usb/*.cpp) \
 $(wildcard LookupTables/*.cpp) \
+$(wildcard $(UTILS_DIR)/*.cpp) 
 
 # ASM sources
 ASM_SOURCES =  \

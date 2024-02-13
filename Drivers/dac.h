@@ -17,8 +17,7 @@ public:
 	void fill(const size_t offset) {
 		callback_(buffer_, kBlockSize);
 
-		const size_t index = offset * kBlockSize;
-		uint32_t *ptr = &dma_buffer_[index];
+		uint32_t *ptr = &dma_buffer_[offset * (kDmaBufferSize / 2)];
 
 		for (size_t i = 0; i < kBlockSize; ++i) {
 			for (size_t chn = 0; chn < kNumChannels; ++chn) {
