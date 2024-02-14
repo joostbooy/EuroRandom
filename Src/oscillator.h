@@ -44,7 +44,7 @@ public:
 		phase_ += inc_;
 		if (phase_ >= 1.f)  {
 			phase_ = 0.f;
-			inc_ = segment_ticks_ / euclidianPattern_.next_duration();
+			inc_ = 1.f / (segment_ticks_ * euclidianPattern_.next_duration());
 			return true;
 		}
 		return false;
