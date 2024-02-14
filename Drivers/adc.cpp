@@ -1,5 +1,4 @@
 #include "adc.h"
-#include "micros.h"
 
 Adc adc;
 
@@ -85,6 +84,12 @@ void Adc::init(){
 
 	// Wait for stabilisation & begin
 	__HAL_ADC_ENABLE(&hadc1);
-	micros.delay(5);
+
+	// delay 5 uSeconds
+	volatile uint32_t delay = 10000;
+	while (delay--) {
+		asm("NOP");
+	}
+
 	HAL_ADC_Start(&hadc1);
 }

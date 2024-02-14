@@ -1,7 +1,7 @@
 #ifndef ClockReader_h
 #define ClockReader_h
 
-#include "micros.h"
+//#include "timer.h"
 
 class ClockReader {
 
@@ -24,7 +24,6 @@ public:
 			interval_ = curr_tick - last_tick_;
 			last_tick_ = curr_tick;
 		}
-
 		++curr_tick;
 	}
 
