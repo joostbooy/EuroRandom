@@ -42,14 +42,13 @@ private:
 
 
 	inline float next_sample() {
-		float gain_ = Oscillator::gain();
 		float phase_ = Oscillator::phase();
 		float skew_ = skew(phase_, amount_);
 		value_ = Dsp::cross_fade(last_value_, target_value_, skew_);
 
 		Oscillator::tick();
 
-		return value_ * gain_;
+		return value_;
 	}
 
 	inline float skew(float phase, float ammount) {
@@ -66,7 +65,7 @@ private:
 		if (stage_ != stage) {
 			stage_ = stage;
 			last_value_ = value_;
-			target_value_ = Rng::reciprocal();
+			target_value_ = RandomGenerator::next(Oscillator::has_accent());
 		}
 	}
 };

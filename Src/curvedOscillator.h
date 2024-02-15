@@ -38,17 +38,17 @@ private:
 	float target_value_;
 
 	inline float next_sample() {
-		float gain_ = Oscillator::gain();
+		bool accent = Oscillator::has_accent();
 		float phase_ = Oscillator::phase() * (EXP_TABLE_SIZE - 1);
 		float curve_ = curve(phase_, shape_);
 		value_ = Dsp::cross_fade(last_value_, target_value_, curve_);
 
 		if (Oscillator::tick()) {
 			last_value_ = value_;
-			target_value_ = Rng::reciprocal();
+			target_value_ = RandomGenerator::next(accent);
 		}
 
-		return value_ * gain_;
+		return value_;
 	}
 
 	inline float curve(float phase, float shape) {

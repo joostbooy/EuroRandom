@@ -7,12 +7,18 @@ class TriangleOscillator : public Oscillator {
 
 public:
 
+	enum Stage {
+		RISING,
+		FALLING
+	};
+
 	void init() {
 		value_ = 0.f;
 		last_value_ = 0.f;
 		target_value_ = 0.f;
 
 		depth_ = 0.f;
+		stage_ = RISING;
 		Oscillator::init();
 	}
 
@@ -32,14 +38,13 @@ public:
 	}
 
 private:
-	bool stage_;
+	Stage stage_;
 	float depth_;
 	float value_;
 	float last_value_;
 	float target_value_;
 
 	inline float next_sample() {
-		float gain_ = Oscillator::gain();
 		float phase_ = Oscillator::phase();
 		float triangle_ = triangle(phase_);
 		float triangle_random_ = Dsp::cross_fade(last_value_, target_value_, triangle_);
@@ -47,36 +52,33 @@ private:
 
 		Oscillator::tick();
 
-		return value_ * gain_;
+		return value_;
 	}
 
 	inline float triangle(float phase) {
 		if (phase < 0.5f) {
-			set_stage(0);
+			set_stage(RISING);
 			return phase * 2.f;
 		} else {
-			set_stage(1);
+			set_stage(FALLING);
 			return (1.f - phase) * 2.f;
 		}
 	}
 
-	inline void set_stage(bool stage) {
+	inline void set_stage(Stage stage) {
 		if (stage_ != stage) {
 			stage_ = stage;
 
-			if (stage) {
-				target_value_ = value_;
-				last_value_ = get_random(0.f, last_value_);
-			} else {
+			if (stage == RISING) {
 				last_value_ = value_;
-				target_value_ = get_random(last_value_, 1.f);
+				target_value_ = RandomGenerator::next_rising(value_, Oscillator::has_accent());
+			} else {
+				target_value_ = value_;
+				last_value_ = RandomGenerator::next_falling(value_, Oscillator::has_accent());
 			}
 		}
 	}
 
-	inline float get_random(float min , float max) {
-		return Rng::reciprocal() * (max - min) + min;
-	}
 };
 
 #endif

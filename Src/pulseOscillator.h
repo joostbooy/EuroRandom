@@ -37,20 +37,20 @@ private:
 	float value_;
 
 	inline float next_sample() {
-		float gain_ = Oscillator::gain();
+		bool accent = Oscillator::has_accent();
 		float phase = Oscillator::phase();
 
 		if ((phase < width_) && (stage_ != 0)) {
 			stage_ = 0;
-			value_ = Rng::reciprocal();
+			value_ = RandomGenerator::next(accent);
 		} else if ((phase >= width_) && (stage_ != 1)) {
 			stage_ = 1;
-			value_ = Rng::reciprocal();
+			value_ = RandomGenerator::next(accent);
 		}
 
 		Oscillator::tick();
 
-		return value_ * gain_;
+		return value_;
 	}
 };
 
