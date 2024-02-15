@@ -3,7 +3,7 @@
 
 #include "oscillator.h"
 
-class TriangleOscillator {
+class TriangleOscillator : public Oscillator {
 
 public:
 
@@ -13,34 +13,22 @@ public:
 		target_value_ = 0.f;
 
 		depth_ = 0.f;
-		oscillator_.init();
+		Oscillator::init();
 	}
 
 	void reset() {
-		oscillator_.reset();
-	}
-
-	void set_segment_ticks(uint32_t value) {
-		oscillator_.set_segment_ticks(value);
-	}
-
-	EuclidianPattern &euclidianPattern() {
-		return oscillator_.euclidianPattern();
+		Oscillator::reset();
 	}
 
 	void set_depth(float value) {
 		depth_ = value;
 	}
 
-	float tick() {
-		float phase_ = oscillator_.phase();
-		float triangle_ = triangle(phase_);
-		float triangle_random_ = Dsp::cross_fade(last_value_, target_value_, triangle_);
-		value_ = Dsp::cross_fade(triangle_, triangle_random_, depth_);
-
-		oscillator_.tick();
-
-		return value_;
+	void fill(uint16_t *data, const size_t inc, const size_t size) {
+		for (size_t i = 0; i < size; ++i){
+			*data = next_sample() * 16383;
+			data += inc;
+		}
 	}
 
 private:
@@ -49,7 +37,18 @@ private:
 	float value_;
 	float last_value_;
 	float target_value_;
-	Oscillator oscillator_;
+
+	inline float next_sample() {
+		float gain_ = Oscillator::gain();
+		float phase_ = Oscillator::phase();
+		float triangle_ = triangle(phase_);
+		float triangle_random_ = Dsp::cross_fade(last_value_, target_value_, triangle_);
+		value_ = Dsp::cross_fade(triangle_, triangle_random_, depth_);
+
+		Oscillator::tick();
+
+		return value_ * gain_;
+	}
 
 	inline float triangle(float phase) {
 		if (phase < 0.5f) {

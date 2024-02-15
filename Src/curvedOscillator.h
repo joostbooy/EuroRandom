@@ -3,7 +3,7 @@
 
 #include "lookupTables.h"
 
-class CurvedOscillator {
+class CurvedOscillator : public Oscillator {
 
 public:
 
@@ -13,36 +13,22 @@ public:
 		target_value_ = 0.f;
 
 		shape_ = 0.f;
-		oscillator_.init();
+		Oscillator::init();
 	}
 
 	void reset() {
-		oscillator_.reset();
-	}
-
-	void set_segment_ticks(uint32_t value) {
-		oscillator_.set_segment_ticks(value);
-	}
-
-	EuclidianPattern &euclidianPattern() {
-		return oscillator_.euclidianPattern();
+		Oscillator::reset();
 	}
 
 	void set_shape(float value) {
 		shape_ = value;
 	}
 
-	float tick() {
-		float phase_ = oscillator_.phase();
-		float curve_ = curve(phase_, shape_);
-		value_ = Dsp::cross_fade(last_value_, target_value_, curve_);
-
-		if (oscillator_.tick()) {
-			last_value_ = value_;
-			target_value_ = Rng::reciprocal();
+	void fill(uint16_t *data, const size_t inc, const size_t size) {
+		for (size_t i = 0; i < size; ++i){
+			*data = next_sample() * 16383;
+			data += inc;
 		}
-
-		return value_;
 	}
 
 private:
@@ -50,7 +36,20 @@ private:
 	float value_;
 	float last_value_;
 	float target_value_;
-	Oscillator oscillator_;
+
+	inline float next_sample() {
+		float gain_ = Oscillator::gain();
+		float phase_ = Oscillator::phase() * (EXP_TABLE_SIZE - 1);
+		float curve_ = curve(phase_, shape_);
+		value_ = Dsp::cross_fade(last_value_, target_value_, curve_);
+
+		if (Oscillator::tick()) {
+			last_value_ = value_;
+			target_value_ = Rng::reciprocal();
+		}
+
+		return value_ * gain_;
+	}
 
 	inline float curve(float phase, float shape) {
 		uint16_t intergral = static_cast<uint16_t>(phase);

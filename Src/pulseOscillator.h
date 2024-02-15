@@ -4,7 +4,7 @@
 #include "oscillator.h"
 #include "rng.h"
 
-class PulseOscillator {
+class PulseOscillator : public Oscillator {
 
 public:
 
@@ -12,28 +12,33 @@ public:
 		stage_ = 0;
 		value_ = 0.f;
 		width_ = 0.f;
-		oscillator_.init();
+		Oscillator::init();
 	}
 
 	void reset() {
 		stage_ = 0;
-		oscillator_.reset();
-	}
-
-	void set_segment_ticks(uint32_t value) {
-		oscillator_.set_segment_ticks(value);
-	}
-
-	EuclidianPattern &euclidianPattern() {
-		return oscillator_.euclidianPattern();
+		Oscillator::reset();
 	}
 
 	void set_width(float value) {
 		width_ = value;
 	}
 
-	float tick() {
-		float phase = oscillator_.phase();
+	void fill(uint16_t *data, const size_t inc, const size_t size) {
+		for (size_t i = 0; i < size; ++i){
+			*data = next_sample() * 16383;
+			data += inc;
+		}
+	}
+
+private:
+	bool stage_;
+	float width_;
+	float value_;
+
+	inline float next_sample() {
+		float gain_ = Oscillator::gain();
+		float phase = Oscillator::phase();
 
 		if ((phase < width_) && (stage_ != 0)) {
 			stage_ = 0;
@@ -43,16 +48,10 @@ public:
 			value_ = Rng::reciprocal();
 		}
 
-		oscillator_.tick();
+		Oscillator::tick();
 
-		return value_;
+		return value_ * gain_;
 	}
-
-private:
-	bool stage_;
-	float width_;
-	float value_;
-	Oscillator oscillator_;
 };
 
 #endif

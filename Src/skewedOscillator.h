@@ -3,7 +3,7 @@
 
 #include "oscillator.h"
 
-class SkewedOscillator {
+class SkewedOscillator : public Oscillator {
 
 public:
 
@@ -14,34 +14,24 @@ public:
 		target_value_ = 0.f;
 
 		amount_ = 0.f;
-		oscillator_.init();
+		Oscillator::init();
 	}
 
 	void reset() {
-		oscillator_.reset();
-	}
-
-	void set_segment_ticks(uint32_t value) {
-		oscillator_.set_segment_ticks(value);
-	}
-
-	EuclidianPattern &euclidianPattern() {
-		return oscillator_.euclidianPattern();
+		Oscillator::reset();
 	}
 
 	void set_amount(float value) {
 		amount_ = value;
 	}
 
-	float tick() {
-		float phase_ = oscillator_.phase();
-		float skew_ = skew(phase_, amount_);
-		value_ = Dsp::cross_fade(last_value_, target_value_, skew_);
-
-		oscillator_.tick();
-
-		return value_;
+	void fill(uint16_t *data, const size_t inc, const size_t size) {
+		for (size_t i = 0; i < size; ++i){
+			*data = next_sample() * 16383;
+			data += inc;
+		}
 	}
+
 
 private:
 	bool stage_;
@@ -49,7 +39,18 @@ private:
 	float value_;
 	float last_value_;
 	float target_value_;
-	Oscillator oscillator_;
+
+
+	inline float next_sample() {
+		float gain_ = Oscillator::gain();
+		float phase_ = Oscillator::phase();
+		float skew_ = skew(phase_, amount_);
+		value_ = Dsp::cross_fade(last_value_, target_value_, skew_);
+
+		Oscillator::tick();
+
+		return value_ * gain_;
+	}
 
 	inline float skew(float phase, float ammount) {
 		if (phase < ammount) {
