@@ -37,16 +37,18 @@ public:
 		NUM_POTS
 	};
 
-
 	void init();
-	void update_pots();
 	void update_swiches();
-	float read_pot(PotId);
+	bool update_pots();
+	void update_clock_led(uint32_t);
+	void reset_clock_led();
 	bool read_switch(SwitchId);
+	float read_pot(PotId);
 
 private:
 	static const size_t kNumDebounceSwitches = 3;
 
+	uint32_t clock_led_ticks_;
 	float pot_value_[NUM_POTS];
 	bool sw_state_[NUM_SWITCHES];
 	uint8_t sw_raw_[kNumDebounceSwitches];

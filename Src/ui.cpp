@@ -1,13 +1,10 @@
 #include "ui.h"
 
 void Ui::init() {
-	for (int i = 0; i < NUM_SWITCHES; ++i) {
-		sw_state_[i] = 0;
-	}
+	clock_led_ticks_ = 0;
 
-	for (int i = 0; i < NUM_POTS; ++i) {
-		pot_value_[i] = 0.f;
-	}
+	std::fill(&sw_state_[0], &sw_state_[NUM_SWITCHES], 0);
+	std::fill(&pot_value_[0], &pot_value_[NUM_POTS], 0.f);
 }
 
 void Ui::debounce(SwitchId id, bool state) {
@@ -23,16 +20,17 @@ void Ui::debounce(SwitchId id, bool state) {
 	}
 }
 
-void Ui::update_pots() {
+bool Ui::update_pots() {
 	if (adc.ready()) {
 		int channel = adc.curr_channel();
 		float in = adc.read() / 4095.f;
 		float out = pot_value_[channel];
 
 		pot_value_[channel] = Dsp::one_pole_filter(in, out, 0.05f);
-
 		adc.convert_next_channel();
+		return true;
 	}
+	return false;
 }
 
 void Ui::update_swiches() {
@@ -45,10 +43,23 @@ void Ui::update_swiches() {
 	debounce(CLOCK, gateIo.read_clock());
 }
 
+void Ui::update_clock_led(uint32_t interval) {
+	bool led_state = clock_led_ticks_ < (interval / 2);
+	gateIo.write_clock_led(led_state);
+
+	if (++clock_led_ticks_ >= interval) {
+		clock_led_ticks_ = 0;
+	}
+}
+
 float Ui::read_pot(PotId id) {
 	return pot_value_[id];
 }
 
 bool Ui::read_switch(SwitchId id) {
 	return sw_state_[id];
+}
+
+void Ui::reset_clock_led() {
+	clock_led_ticks_ = 0;
 }
