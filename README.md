@@ -1,19 +1,24 @@
 # EUCLIDIAN RANDOM SOURCE
+<img src="euroRandomFaceplate.jpg" height="380"></a>
 
 ## Features
-- x
-	* x
-	* x
-	* x
-	* x
+- 8 random voltages
+	* Triangle
+	* Curved
+	* Stepped
+	* Skewed
+	* Gate with random length
+	* Trigger with a 50% chance
+	* Burst
+	* Noise
 
 
 ## Specs
-- x
+- Cortex-M4 ARM 72mHz (STM32F3)
+- 14 bit DAC
 
 ## Credits
-- x
+- Pichenettes		https://github.com/pichenettes
 
 ## License
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-This work is licensed under a [MIT License](https://opensource.org/licenses/MIT).
