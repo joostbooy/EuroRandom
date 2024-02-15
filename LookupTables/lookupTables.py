@@ -15,7 +15,9 @@ exp_table_size = 1024
 ________________________'''
 name = 'exp'
 
-values = numpy.arange(0, exp_table_size)
+stepsize = 1.0 / exp_table_size
+x = numpy.arange(0, 1.0, stepsize)
+values = 1.0 - numpy.exp(-3 * x)
 
 tables.append('float ' + name)
 tables.append(values.astype('float32'))
@@ -24,6 +26,8 @@ tables.append(values.astype('float32'))
 	INV EXP TABLE
 ________________________'''
 name = 'inv_exp'
+
+values = (1.0 - numpy.exp(-3 * (1 - x)))
 
 tables.append('float ' + name)
 tables.append(1.0 - values.astype('float32'))
