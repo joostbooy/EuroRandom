@@ -12,15 +12,19 @@ public:
 	void init() {
 		inc_ = 0.1;
 		phase_ = 0.f;
+		accent_ = 0;
+		segment_ticks_ = 16000;
 		euclidianPattern_.init();
+		euclidianAccentPattern_.init();
 	}
 
-	//Gate &gate() {
-	//	return gate_;
-	//}
+	void update_segments(float fill, float accents, float shifts) {
+		int pulses_ = fill * 32;
+		int shifts_ = pulses_ * shifts;
+		int accents_ = pulses_ * accents;
 
-	EuclidianPattern &euclidianPattern() {
-		return euclidianPattern_;
+		euclidianPattern_.update(32, pulses_, shifts);
+		euclidianAccentPattern_.update(pulses_, accents_, shifts_);
 	}
 
 	void reset() {
@@ -40,11 +44,20 @@ public:
 		return phase_;
 	}
 
+	bool has_accent() {
+		return accent_;
+	}
+
+	float gain() {
+		return accent_ ? 1.f : 0.75f;
+	}
+
 	bool tick() {
 		phase_ += inc_;
 		if (phase_ >= 1.f)  {
 			phase_ = 0.f;
 			inc_ = 1.f / (segment_ticks_ * euclidianPattern_.next_duration());
+			accent_ = euclidianAccentPattern_.next_trigger();
 			return true;
 		}
 		return false;
@@ -54,8 +67,10 @@ private:
 	float inc_;
 	float phase_;
 
+	bool accent_;
 	uint32_t segment_ticks_;
 	EuclidianPattern euclidianPattern_;
+	EuclidianPattern euclidianAccentPattern_;
 };
 
 #endif
