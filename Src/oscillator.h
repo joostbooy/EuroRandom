@@ -2,6 +2,7 @@
 #define Oscillator_h
 
 #include "dsp.h"
+#include "randomGenerator.h"
 #include "euclidianPattern.h"
 
 
@@ -18,13 +19,15 @@ public:
 		euclidianAccentPattern_.init();
 	}
 
-	void update_segments(float fill, float accents, float shifts) {
+	void update_segments(uint32_t ticks, float fill, float accents, float shifts) {
 		int pulses_ = fill * 32;
 		int shifts_ = pulses_ * shifts;
 		int accents_ = pulses_ * accents;
 
 		euclidianPattern_.update(32, pulses_, shifts);
 		euclidianAccentPattern_.update(pulses_, accents_, shifts_);
+
+		segment_ticks_ = ticks;
 	}
 
 	void reset() {
@@ -36,20 +39,12 @@ public:
 		return segment_ticks_;
 	}
 
-	void set_segment_ticks(uint32_t value) {
-		segment_ticks_ = value;
-	}
-
 	float phase() {
 		return phase_;
 	}
 
 	bool has_accent() {
 		return accent_;
-	}
-
-	float gain() {
-		return accent_ ? 1.f : 0.75f;
 	}
 
 	bool tick() {
@@ -60,6 +55,7 @@ public:
 			accent_ = euclidianAccentPattern_.next_trigger();
 			return true;
 		}
+
 		return false;
 	}
 
