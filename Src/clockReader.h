@@ -11,7 +11,7 @@ public:
 		curr_state_ = 0;
 		last_state_ = 0;
 		last_tick_ = 0;
-		interval_ = 48000;
+		interval_ = 100;
 
 		count_ = 0;
 		average_ = 0;
@@ -22,10 +22,9 @@ public:
 		curr_state_ = state;
 
 		if (curr_state_ == 1 && last_state_ == 0) {
-			//average(curr_tick - last_tick_);
-			//hysterisis(curr_tick - last_tick_, 48);
-			interval_ = curr_tick - last_tick_;
+			interval_ = stmlib::clip(8, 2000, curr_tick - last_tick_);
 			last_tick_ = curr_tick;
+
 		}
 		++curr_tick;
 	}
@@ -52,13 +51,6 @@ private:
 			average_ = 0;
 		}
 	}
-
-	inline void hysterisis(uint32_t value, const uint32_t step_size) {
-		if (stmlib::difference(value, interval_) >= step_size) {
-			interval_ = value;
-		}
-	}
-
 };
 
 #endif
