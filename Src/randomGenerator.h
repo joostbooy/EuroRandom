@@ -8,7 +8,7 @@ class RandomGenerator {
 public:
 
 	static float next(bool accent) {
-		if (seed_ & 1) {
+		if (state_ & 1) {
 			return next_rising(kMin, accent);
 		} else {
 			return next_falling(kMax, accent);
@@ -31,6 +31,10 @@ public:
 		}
 	}
 
+	static bool next_bool() {
+		return u16() & 1;
+	}
+
 private:
 	static constexpr float kAccentRange = 0.2f;
 	static constexpr float kDeadBand = 0.05f;
@@ -46,11 +50,11 @@ private:
 		return value;
 	}
 
-	static uint16_t seed_;
+	static uint16_t state_;
 
 	static inline uint16_t u16() {
-		seed_ = seed_ * 1664525L + 1013904223L;
-		return seed_;
+		state_ = state_ * 1664525L + 1013904223L;
+		return state_;
 	}
 
 	static inline float read(float min, float max) {
