@@ -13,7 +13,6 @@
 //#include <assert.h>
 #include <algorithm>
 
-#define CCM_RAM __attribute__((section(".ccmram")))
 #define FORCE_INLINE __attribute__((always_inline))
 
 class stmlib {
