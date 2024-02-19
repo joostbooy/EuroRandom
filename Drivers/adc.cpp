@@ -86,10 +86,12 @@ void Adc::init(){
 	__HAL_ADC_ENABLE(&hadc1);
 
 	// delay 5 uSeconds
-	volatile uint32_t delay = 10000;
-	while (delay--) {
-		asm("NOP");
-	}
+	//volatile uint32_t delay = 1000;
+	//while (delay--) {
+	//	asm("NOP");
+	//}
+
+	set_mux_channel(0);
 
 	HAL_ADC_Start(&hadc1);
 }
