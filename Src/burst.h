@@ -21,7 +21,7 @@ public:
 	}
 
 	bool tick() {
-		while (duration_ == 0 && phase_ < 1.f) {
+		if (duration_ == 0 && phase_ < 1.f) {
 			duration_ = next_duration();
 
 			width_ = duration_;
