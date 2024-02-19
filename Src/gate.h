@@ -11,7 +11,7 @@ public:
 		duration_ = 0;
 	}
 
-	void reset(bool accent, uint32_t duration) {
+	void set(bool accent, uint32_t duration) {
 		if (accent) {
 			duration_ = duration > 1 ? duration - 1 : 1;
 		} else {

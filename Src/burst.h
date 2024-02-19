@@ -8,10 +8,12 @@ class Burst {
 public:
 
 	void init() {
-
+		inc_ = 1.f;
+		phase_ = 1.f;
+		duration_ = 0;
 	}
 
-	void reset(bool accent, int duration) {
+	void set(bool accent, int duration) {
 		phase_ = 0.f;
 		inc_ = accent ? (1.f / 64.f) : (1.f / 32.f);
 
@@ -21,7 +23,7 @@ public:
 	}
 
 	bool tick() {
-		if (duration_ == 0 && phase_ < 1.f) {
+		while (duration_ == 0 && phase_ < 1.f) {
 			duration_ = next_duration();
 
 			width_ = duration_;
@@ -49,7 +51,7 @@ private:
 		int next;
 
 		phase_ += inc_;
-		next = total_ * (phase_ * phase_) * RandomGenerator::next(1.f - inc_, 1.f, false);
+		next = total_ * (phase_ * phase_) * RandomGenerator::next(1.f - inc_, 1.f);
 		next -= total_used_;
 		total_used_ += next;
 

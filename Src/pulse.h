@@ -11,7 +11,7 @@ public:
 		duration_ = 0;
 	}
 
-	void reset(bool accent) {
+	void set(bool accent) {
 		if (accent || RandomGenerator::next_bool()) {
 			duration_ = (Dac::kUpdateRate / 1000) * 5;	// 5 ms
 		}

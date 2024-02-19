@@ -11,7 +11,7 @@ public:
 		reset(false, 0);
 	}
 
-	void reset(bool accent, uint32_t duration) {
+	void set(bool accent, uint32_t duration) {
 		duration_ = 0;
 		total_ = duration_;
 		max_ = accent ? 0.05f : 0.5f;
