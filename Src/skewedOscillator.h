@@ -31,15 +31,13 @@ public:
 			data += inc;
 		}
 	}
-
-
+	
 private:
 	bool stage_;
 	float amount_;
 	float value_;
 	float last_value_;
 	float target_value_;
-
 
 	inline float next_sample() {
 		float phase_ = Oscillator::phase();
