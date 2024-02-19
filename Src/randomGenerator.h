@@ -7,14 +7,6 @@ class RandomGenerator {
 
 public:
 
-	static float next(bool accent) {
-		if (state_ & 1) {
-			return next_rising(kMin, accent);
-		} else {
-			return next_falling(kMax, accent);
-		}
-	}
-
 	static float next_falling(float max, bool accent) {
 		if (accent) {
 			return read(0.f, kAccentRange);
@@ -31,8 +23,20 @@ public:
 		}
 	}
 
+	static float next(float min, float max, bool accent) {
+		if (state_ & 1)  {
+			return next_rising(min, accent);
+		} else {
+			return next_falling(max, accent);
+		}
+	}
+
 	static bool next_bool() {
 		return u16() & 1;
+	}
+
+	static float next(bool accent) {
+		return next(kMin, kMax, accent);
 	}
 
 private:
