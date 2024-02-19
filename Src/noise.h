@@ -21,18 +21,21 @@ public:
 		if (duration_ == 0 && total_ > 0) {
 			duration_ = RandomGenerator::falling(min_) * total_;
 			total_ -= duration_;
+
+			width_ = duration_ >= 2 ? (duration_ / 2) : 1;
 		}
 
 		if (duration_ > 0) {
 			--duration;
-			return true;
 		}
-		return false;
+
+		return duration_ >= width_;
 	}
 
 private:
 	int duration_;
 	int total_;
+	int width_;
 	float min_;
 };
 

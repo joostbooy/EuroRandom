@@ -11,7 +11,7 @@ public:
 
 	}
 
-	void reset(bool accent, uint32_t duration) {
+	void reset(bool accent, int duration) {
 		phase_ = 0.f;
 		inc_ = accent ? (1.f / 64.f) : (1.f / 32.f);
 
@@ -23,25 +23,27 @@ public:
 	bool tick() {
 		while (duration_ == 0 && phase_ < 1.f) {
 			duration_ = next_duration();
+			width_ = duration_ >= 2 ? (duration_ / 2) : 1;
 		}
 
 		if (duration_ > 0) {
 			--duration_;
-			return true;
 		}
-		return false;
+
+		return duration_ >= width_;
 	}
 
 private:
-	uint32_t total_;
-	uint32_t total_used_;
-	uint32_t duration_;
+	int total_;
+	int total_used_;
+	int duration_;
+	int width_;
 
 	float inc_;
 	float phase_;
 
 	uint32_t next_duration() {
-		uint32_t next;
+		int next;
 
 		phase_ += inc_;
 		next = total_ * (phase_ * phase_) * RandomGenerator::next(1.f - inc_, 1.f, false);
