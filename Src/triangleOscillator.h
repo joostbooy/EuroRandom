@@ -14,8 +14,8 @@ public:
 
 	void init() {
 		value_ = 0.f;
-		last_value_ = 0.f;
-		target_value_ = 0.f;
+		value_a_ = 0.f;
+		value_b_ = 0.f;
 
 		depth_ = 0.f;
 		stage_ = RISING;
@@ -41,13 +41,13 @@ private:
 	Stage stage_;
 	float depth_;
 	float value_;
-	float last_value_;
-	float target_value_;
+	float value_a_;
+	float value_b_;
 
 	inline float next_sample() {
 		float phase_ = Oscillator::phase();
 		float triangle_ = triangle(phase_);
-		float triangle_random_ = Dsp::cross_fade(last_value_, target_value_, triangle_);
+		float triangle_random_ = Dsp::cross_fade(value_a_, value_b_, triangle_);
 		value_ = Dsp::cross_fade(triangle_, triangle_random_, depth_);
 
 		Oscillator::tick();
@@ -70,11 +70,11 @@ private:
 			stage_ = stage;
 
 			if (stage == RISING) {
-				last_value_ = value_;
-				target_value_ = RandomGenerator::next_rising(value_, Oscillator::has_accent());
+				value_a_ = value_;
+				value_b_ = RandomGenerator::next_rising(value_, Oscillator::has_accent());
 			} else {
-				target_value_ = value_;
-				last_value_ = RandomGenerator::next_falling(value_, Oscillator::has_accent());
+				value_b_ = value_;
+				value_a_ = RandomGenerator::next_falling(value_, Oscillator::has_accent());
 			}
 		}
 	}
