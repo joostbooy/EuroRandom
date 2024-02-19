@@ -24,7 +24,6 @@ public:
 				interval_ = new_interval_;
 			}
 			last_tick_ = curr_tick;
-
 		}
 		++curr_tick;
 	}
