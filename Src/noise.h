@@ -28,9 +28,10 @@ public:
 
 		if (duration_ > 0) {
 			--duration;
+			return duration_ >= width_;
 		}
-
-		return duration_ >= width_;
+		
+		return false;
 	}
 
 private:
