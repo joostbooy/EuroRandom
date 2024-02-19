@@ -7,36 +7,36 @@ class RandomGenerator {
 
 public:
 
-	static float next_falling(float max, bool accent) {
-		if (accent) {
-			return read(0.f, kAccentRange);
-		} else {
-			return read(kMin, clip(max));
-		}
+	static inline float next(float min, float max) {
+		return (1.f / 65535.f) * u16() * (max - min) + min;
 	}
 
-	static float next_rising(float min, bool accent) {
-		if (accent) {
-			return read(1.f - kAccentRange, 1.0f);
-		} else {
-			return read(clip(min), kMax);
-		}
-	}
-
-	static float next(float min, float max, bool accent) {
+	static inline float next(bool accent) {
 		if (state_ & 1)  {
-			return next_rising(min, accent);
+			return next_rising(kMin, accent);
 		} else {
-			return next_falling(max, accent);
+			return next_falling(kMax, accent);
 		}
 	}
 
-	static bool next_bool() {
-		return u16() & 1;
+	static inline float next_falling(float max, bool accent) {
+		if (accent) {
+			return next(0.f, kAccentRange);
+		} else {
+			return next(kMin, clip(max));
+		}
 	}
 
-	static float next(bool accent) {
-		return next(kMin, kMax, accent);
+	static inline float next_rising(float min, bool accent) {
+		if (accent) {
+			return next(1.f - kAccentRange, 1.0f);
+		} else {
+			return next(clip(min), kMax);
+		}
+	}
+
+	static inline bool next_bool() {
+		return u16() & 1;
 	}
 
 private:
@@ -59,10 +59,6 @@ private:
 	static inline uint16_t u16() {
 		state_ = state_ * 1664525L + 1013904223L;
 		return state_;
-	}
-
-	static inline float read(float min, float max) {
-		return (1.f / 65535.f) * u16() * (max - min) + min;
 	}
 };
 
