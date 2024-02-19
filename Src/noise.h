@@ -14,12 +14,12 @@ public:
 	void reset(bool accent, uint32_t duration) {
 		duration_ = 0;
 		total_ = duration_;
-		min_ = accent ? 0.05f : 0.5f;
+		max_ = accent ? 0.05f : 0.5f;
 	}
 
 	bool tick() {
 		if (duration_ == 0 && total_ > 0) {
-			duration_ = RandomGenerator::falling(min_) * total_;
+			duration_ = RandomGenerator::falling(max_) * total_;
 			total_ -= duration_;
 
 			width_ = duration_;
@@ -30,7 +30,7 @@ public:
 			--duration;
 			return duration_ >= width_;
 		}
-		
+
 		return false;
 	}
 
@@ -38,7 +38,7 @@ private:
 	int duration_;
 	int total_;
 	int width_;
-	float min_;
+	float max_;
 };
 
 #endif
