@@ -15,6 +15,7 @@ public:
 		phase_ = 0.f;
 		accent_ = 0;
 		segment_ticks_ = 16000;
+
 		euclidianPattern_.init();
 		euclidianAccentPattern_.init();
 	}
@@ -33,10 +34,11 @@ public:
 	void reset() {
 		phase_ = 0.f;
 		euclidianPattern_.reset();
+		euclidianAccentPattern_.reset();
 	}
 
-	uint32_t segment_ticks() {
-		return segment_ticks_;
+	uint32_t segment_duration() {
+		return segment_duration_;
 	}
 
 	float phase() {
@@ -51,8 +53,9 @@ public:
 		phase_ += inc_;
 		if (phase_ >= 1.f)  {
 			phase_ = 0.f;
-			inc_ = 1.f / (segment_ticks_ * euclidianPattern_.next_duration());
 			accent_ = euclidianAccentPattern_.next_trigger();
+			segment_duration_ = euclidianPattern_.next_duration() * segment_ticks_;
+			inc_ = 1.f / segment_duration_;
 			return true;
 		}
 
@@ -62,9 +65,9 @@ public:
 private:
 	float inc_;
 	float phase_;
-
 	bool accent_;
 	uint32_t segment_ticks_;
+	uint32_t segment_duration_;
 	EuclidianPattern euclidianPattern_;
 	EuclidianPattern euclidianAccentPattern_;
 };
