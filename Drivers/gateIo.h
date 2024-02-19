@@ -37,7 +37,7 @@ public:
 	}
 
 	// Outputs
-	void write_trigger(bool state) {
+	void write_pulse(bool state) {
 		GPIOA->BSRR = state ? GPIO_PIN_3 : GPIO_PIN_3 << 16;
 	}
 
