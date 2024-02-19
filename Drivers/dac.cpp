@@ -2,6 +2,9 @@
 
 Dac dac;
 
+const uint32_t Dac::kSamplerate = 22000;
+const uint32_t Dac::kUpdateRate = Dac::kSamplerate / Dac::kBlockSize;
+
 void Dac::init() {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 
@@ -23,9 +26,9 @@ void Dac::init() {
 	hi2s2.Instance = SPI2;
 	hi2s2.Init.Mode = I2S_MODE_MASTER_TX;
 	hi2s2.Init.Standard = I2S_STANDARD_PHILIPS;
-	hi2s2.Init.DataFormat = I2S_DATAFORMAT_16B;
+	hi2s2.Init.DataFormat = I2S_DATAFORMAT_32B;
 	hi2s2.Init.MCLKOutput = I2S_MCLKOUTPUT_DISABLE;
-	hi2s2.Init.AudioFreq = I2S_AUDIOFREQ_16K;
+	hi2s2.Init.AudioFreq = I2S_AUDIOFREQ_22K;
 	hi2s2.Init.CPOL = I2S_CPOL_LOW;
 	hi2s2.Init.ClockSource = I2S_CLOCK_SYSCLK;
 	hi2s2.Init.FullDuplexMode = I2S_FULLDUPLEXMODE_DISABLE;
@@ -47,15 +50,14 @@ void Dac::init() {
 	HAL_I2S_Transmit_DMA(&hi2s2, (uint16_t*)dma_buffer_, kDmaBufferSize);
 }
 
-
 void Dac::start(void (*callback)(Buffer*, size_t)) {
 	callback_ = callback;
+	HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
 	HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 0, 0);
 	HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
 }
 
 
-// I2S DMA 1 kHz (samplerate / buffer size)
 extern "C" {
 	void DMA1_Channel5_IRQHandler(void) {
 		uint32_t flags = DMA1->ISR;

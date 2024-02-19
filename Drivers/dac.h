@@ -26,6 +26,9 @@ public:
 		}
 	}
 
+	static const uint32_t kSamplerate;
+	static const uint32_t kUpdateRate;
+
 private:
 	static const size_t kBlockSize = 16;
 	static const size_t kNumChannels = 4;
