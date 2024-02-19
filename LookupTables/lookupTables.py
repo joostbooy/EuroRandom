@@ -7,7 +7,6 @@ import lutCompiler
 
 #table variables
 tables = []
-exp_table_size = 1024
 
 
 '''____________________
@@ -30,6 +29,7 @@ values = 1.0 - values[::-1]
 
 tables.append('float ' + name)
 tables.append(values.astype('float32'))
+
 
 '''____________________
 	DEFINES
