@@ -21,7 +21,7 @@ public:
 
 	bool tick() {
 		if (duration_ > 0) {
-			--duration;
+			--duration_;
 			return true;
 		}
 		return false;
