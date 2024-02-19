@@ -6,7 +6,7 @@ class EuclidianPattern {
 public:
 
 	void init() {
-		update(32, 32, 0);
+		update(kMaxSteps, kMaxSteps, 0);
 		reset();
 	}
 
@@ -23,6 +23,7 @@ public:
 		int count = 0;
 		int bucket = 0;
 		int index = shifts_;
+
 		triggers_ = 0;
 
 		for (int i = 0; i < steps_; ++i) {
@@ -31,19 +32,11 @@ public:
 
 			if (bucket >= steps_) {
 				bucket -= steps_;
-				duration_[++index %= pulses_] = count;
+				triggers_ |= 1 << ((i + shifts_) % steps_);
+				duration_[index++ % pulses_] = count;
 				count = 0;
-
-				triggers_ |= (1 << i);
 			}
 		}
-
-		triggers_ = shift_triggers(triggers_, shifts_);
-	}
-
-	bool next_trigger() {
-		trigger_pos_ %= steps_;
-		return triggers_ & (1 << trigger_pos_++);
 	}
 
 	int next_duration() {
@@ -51,8 +44,13 @@ public:
 		return duration_[duration_pos_++];
 	}
 
+	bool next_trigger() {
+		++trigger_pos_ %= steps_;
+		return triggers_ & (1 << trigger_pos_);
+	}
+
 private:
-	static const size_t kMaxSteps = 32;
+	static const size_t kMaxSteps = 16;
 
 	int steps_;
 	int shifts_;
@@ -61,11 +59,7 @@ private:
 	int trigger_pos_;
 	int duration_[kMaxSteps];
 
-	uint32_t triggers_;
-
-	uint32_t shift_triggers(uint32_t data, int shifts) {
-		return (data >> shifts) | (data << (31 - shifts));
-	}
+	uint16_t triggers_;
 };
 
 #endif
