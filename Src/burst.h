@@ -23,7 +23,9 @@ public:
 	bool tick() {
 		while (duration_ == 0 && phase_ < 1.f) {
 			duration_ = next_duration();
-			width_ = duration_ >= 2 ? (duration_ / 2) : 1;
+
+			width_ = duration_;
+			width_ -= duration_ >= 4 ? (duration_ / 4) : 1;
 		}
 
 		if (duration_ > 0) {
