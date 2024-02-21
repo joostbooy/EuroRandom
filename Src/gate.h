@@ -15,7 +15,7 @@ public:
 		if (accent) {
 			duration_ = duration > 1 ? duration - 1 : 1;
 		} else {
-			duration_ = duration * RandomGenerator::next_falling(0.65f, false);
+			duration_ = duration * RandomGenerator::next(0.0f, 0.65f);
 		}
 	}
 
