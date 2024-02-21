@@ -11,9 +11,9 @@ public:
 		duration_ = 0;
 	}
 
-	void set(bool accent) {
+	void set(bool accent, uint32_t duration) {
 		if (accent || RandomGenerator::next_bool()) {
-			duration_ = (Dac::kUpdateRate / 1000) * 5;	// 5 ms
+			duration_ = duration >= 4 ? (duration / 4) : 1;
 		}
 	}
 
