@@ -1,6 +1,7 @@
 #ifndef CurvedOscillator_h
 #define CurvedOscillator_h
 
+#include "noise.h"
 #include "lookupTables.h"
 
 class CurvedOscillator : public Oscillator {
@@ -13,10 +14,13 @@ public:
 		target_value_ = 0.f;
 
 		shape_ = 0.f;
+		noise_state_ = 0;
 		Oscillator::init();
+		noise_.init();
 	}
 
 	void reset() {
+		noise_.init();
 		Oscillator::reset();
 	}
 
@@ -31,11 +35,18 @@ public:
 		}
 	}
 
+	bool noise_state() {
+		return noise_state_;
+	}
+
 private:
 	float shape_;
 	float value_;
 	float last_value_;
 	float target_value_;
+
+	Noise noise_;
+	bool noise_state_;
 
 	inline float next_sample() {
 		bool accent = Oscillator::has_accent();
@@ -46,7 +57,10 @@ private:
 		if (Oscillator::tick()) {
 			last_value_ = value_;
 			target_value_ = RandomGenerator::next(accent);
+			noise_.set(accent, Oscillator::segment_duration());
 		}
+
+		noise_state_ = noise_.tick();
 
 		return value_;
 	}

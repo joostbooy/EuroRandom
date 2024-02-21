@@ -1,6 +1,7 @@
 #ifndef PulseOscillator_h
 #define PulseOscillator_h
 
+#include "burst.h"
 #include "oscillator.h"
 #include "rng.h"
 
@@ -12,6 +13,9 @@ public:
 		stage_ = 0;
 		value_ = 0.f;
 		width_ = 0.f;
+
+		burst_state_ = 0;
+		burst_.init();
 		Oscillator::init();
 	}
 
@@ -31,10 +35,17 @@ public:
 		}
 	}
 
+	bool burst_state() {
+		return burst_state_;
+	}
+
 private:
 	bool stage_;
 	float width_;
 	float value_;
+
+	Burst burst_;
+	bool burst_state_;
 
 	inline float next_sample() {
 		bool accent = Oscillator::has_accent();
@@ -48,7 +59,11 @@ private:
 			value_ = RandomGenerator::next(accent);
 		}
 
-		Oscillator::tick();
+		if (Oscillator::tick()) {
+			burst_.set(accent, Oscillator::segment_duration());
+		}
+
+		burst_state_ = burst_.tick();
 
 		return value_;
 	}

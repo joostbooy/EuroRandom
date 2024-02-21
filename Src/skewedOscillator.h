@@ -1,6 +1,7 @@
 #ifndef SkewedOscillator_h
 #define SkewedOscillator_h
 
+#include "pulse.h"
 #include "oscillator.h"
 
 class SkewedOscillator : public Oscillator {
@@ -14,10 +15,13 @@ public:
 		target_value_ = 0.f;
 
 		amount_ = 0.f;
+		pulse_state_ = 0;
+		pulse_.init();
 		Oscillator::init();
 	}
 
 	void reset() {
+		pulse_.init();
 		Oscillator::reset();
 	}
 
@@ -31,7 +35,11 @@ public:
 			data += inc;
 		}
 	}
-	
+
+	bool pulse_state() {
+		return pulse_state_;
+	}
+
 private:
 	bool stage_;
 	float amount_;
@@ -39,12 +47,19 @@ private:
 	float last_value_;
 	float target_value_;
 
+	Pulse pulse_;
+	bool pulse_state_;
+
 	inline float next_sample() {
 		float phase_ = Oscillator::phase();
 		float skew_ = skew(phase_, amount_);
 		value_ = Dsp::cross_fade(last_value_, target_value_, skew_);
 
-		Oscillator::tick();
+		if (Oscillator::tick()) {
+			pulse_.set(Oscillator::has_accent(), Oscillator::segment_duration());
+		}
+
+		pulse_state_ = pulse_.tick();
 
 		return value_;
 	}

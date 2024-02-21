@@ -1,6 +1,7 @@
 #ifndef TriangleOscillator_h
 #define TriangleOscillator_h
 
+#include "gate.h"
 #include "oscillator.h"
 
 class TriangleOscillator : public Oscillator {
@@ -20,9 +21,11 @@ public:
 		depth_ = 0.f;
 		stage_ = RISING;
 		Oscillator::init();
+		gate_.init();
 	}
 
 	void reset() {
+		gate_.init();
 		Oscillator::reset();
 	}
 
@@ -37,6 +40,10 @@ public:
 		}
 	}
 
+	bool gate_state() {
+		return gate_state_;
+	}
+
 private:
 	Stage stage_;
 	float depth_;
@@ -44,13 +51,20 @@ private:
 	float value_a_;
 	float value_b_;
 
+	Gate gate_;
+	bool gate_state_;
+
 	inline float next_sample() {
 		float phase_ = Oscillator::phase();
 		float triangle_ = triangle(phase_);
 		float triangle_random_ = Dsp::cross_fade(value_a_, value_b_, triangle_);
 		value_ = Dsp::cross_fade(triangle_, triangle_random_, depth_);
 
-		Oscillator::tick();
+		if (Oscillator::tick()) {
+			gate_.set(Oscillator::has_accent(), Oscillator::segment_duration());
+		}
+
+		gate_state_ = gate_.tick();
 
 		return value_;
 	}

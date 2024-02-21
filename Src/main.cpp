@@ -3,6 +3,7 @@
 #include "dac.h"
 #include "adc.h"
 #include "gateIo.h"
+#include "timer.h"
 
 #include "ui.h"
 #include "clockReader.h"
@@ -11,12 +12,17 @@
 #include "skewedOscillator.h"
 #include "curvedOscillator.h"
 
+#include "burst.h"
+
 Ui ui;
 ClockReader clockReader;
 PulseOscillator pulseOscillator;
 TriangleOscillator triangleOscillator;
 SkewedOscillator skewedOscillator;
 CurvedOscillator curvedOscillator;
+
+bool reset = 0;
+uint8_t ui_prescaler = 0;
 
 extern "C" {
 
@@ -41,25 +47,28 @@ extern "C" {
 //}
 
 
-bool reset = 0;
-uint8_t sw_prescaler = 0;
+//void TIM2_IRQHandler(void) {
+//	if (!(TIM2->SR & TIM_IT_UPDATE)) {
+//		return;
+//	}
+//	TIM2->SR = ~TIM_IT_UPDATE;
+//	ui.poll();
+//}
+
 
 void fill(Dac::Buffer *buffer, const size_t size) {
-	// Update switches
-	if (++sw_prescaler >= 12) {
-		sw_prescaler = 0;
-		ui.update_swiches();
+
+	if (++ui_prescaler & 1) {
+		ui.poll();
 	}
 
 	// Update clock interval
 	clockReader.tick(ui.read_switch(Ui::CLOCK));
 	uint32_t interval = clockReader.interval();
 	uint32_t ticks = size * interval;
-
 	ui.update_clock_led(interval);
 
 	// Update pots
-	ui.update_pots();
 	float shifts = ui.read_pot(Ui::SHIFT);
 	float accents = ui.read_pot(Ui::ACCENTS);
 
@@ -86,18 +95,11 @@ void fill(Dac::Buffer *buffer, const size_t size) {
 		ui.reset_clock_led();
 	}
 
-	// Set trigger outs
-	gateIo.write_burst(0);
-	gateIo.write_trigger(0);
-	gateIo.write_gate(0);
-	gateIo.write_noise(0);
-
-	//	if (ui.read_switch(Ui::TRIGGER_INSERT)) {
-	//		triggerOut.tick(ui.read_switch(Ui::TRIGGER));
-	//	} else {
-	//		triggerOut.tick();
-	//	}
-
+	// Update gates
+	gateIo.write_pulse(skewedOscillator.pulse_state());
+	gateIo.write_gate(triangleOscillator.gate_state());
+	gateIo.write_burst(pulseOscillator.burst_state());
+	gateIo.write_noise(curvedOscillator.noise_state());
 
 	// Render oscillators
 	pulseOscillator.fill(&buffer[0].channel[0], 4, size);		// Pulse
@@ -115,7 +117,6 @@ int main(void)
 	debug.init();
 
 	ui.init();
-	//triggerOut.init();
 	clockReader.init();
 	pulseOscillator.init();
 	triangleOscillator.init();
@@ -125,6 +126,6 @@ int main(void)
 	dac.start(&fill);
 
 	while (1) {
-		//
+
 	}
 }
