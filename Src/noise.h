@@ -8,7 +8,10 @@ class Noise {
 public:
 
 	void init() {
-		reset(false, 0);
+		duration_ = 0;
+		total_ = 0;
+		width_ = 0;
+		max_ = 0.f;
 	}
 
 	void set(bool accent, uint32_t duration) {
@@ -19,16 +22,14 @@ public:
 
 	bool tick() {
 		if (duration_ == 0 && total_ > 0) {
-			duration_ = RandomGenerator::falling(max_) * total_;
+			duration_ = RandomGenerator::next(0.0f, max_) * total_;
 			total_ -= duration_;
-
-			width_ = duration_;
-			width_ -= duration_ >= 4 ? (duration_ / 4) : 1;
+			width_ = duration_ >= 4 ? duration_ - (duration_ / 4) : 1;
 		}
 
 		if (duration_ > 0) {
-			--duration;
-			return duration_ >= width_;
+			--duration_;
+			return duration_ > width_;
 		}
 
 		return false;
