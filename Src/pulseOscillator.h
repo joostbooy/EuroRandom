@@ -35,6 +35,14 @@ public:
 		}
 	}
 
+	void set_burst_oscillator(bool state) {
+		burst_oscillator_ = state;
+	}
+
+	void manual_burst() {
+		burst_.set(Oscillator::has_accent(), Oscillator::segment_duration());
+	}
+
 	bool burst_state() {
 		return burst_state_;
 	}
@@ -46,6 +54,7 @@ private:
 
 	Burst burst_;
 	bool burst_state_;
+	bool burst_oscillator_;
 
 	inline float next_sample() {
 		bool accent = Oscillator::has_accent();
@@ -61,7 +70,7 @@ private:
 
 		burst_state_ = burst_.tick();
 
-		if (Oscillator::tick()) {
+		if (Oscillator::tick() && burst_oscillator_) {
 			burst_.set(accent, Oscillator::segment_duration());
 		}
 
