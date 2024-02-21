@@ -59,11 +59,11 @@ private:
 			value_ = RandomGenerator::next(accent);
 		}
 
+		burst_state_ = burst_.tick();
+
 		if (Oscillator::tick()) {
 			burst_.set(accent, Oscillator::segment_duration());
 		}
-
-		burst_state_ = burst_.tick();
 
 		return value_;
 	}

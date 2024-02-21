@@ -60,11 +60,11 @@ private:
 		float triangle_random_ = Dsp::cross_fade(value_a_, value_b_, triangle_);
 		value_ = Dsp::cross_fade(triangle_, triangle_random_, depth_);
 
+		gate_state_ = gate_.tick();
+
 		if (Oscillator::tick()) {
 			gate_.set(Oscillator::has_accent(), Oscillator::segment_duration());
 		}
-
-		gate_state_ = gate_.tick();
 
 		return value_;
 	}

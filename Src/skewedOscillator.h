@@ -55,11 +55,11 @@ private:
 		float skew_ = skew(phase_, amount_);
 		value_ = Dsp::cross_fade(last_value_, target_value_, skew_);
 
+		pulse_state_ = pulse_.tick();
+
 		if (Oscillator::tick()) {
 			pulse_.set(Oscillator::has_accent(), Oscillator::segment_duration());
 		}
-
-		pulse_state_ = pulse_.tick();
 
 		return value_;
 	}

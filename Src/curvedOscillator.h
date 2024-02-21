@@ -54,13 +54,13 @@ private:
 		float curve_ = curve(phase_, shape_);
 		value_ = Dsp::cross_fade(last_value_, target_value_, curve_);
 
+		noise_state_ = noise_.tick();
+
 		if (Oscillator::tick()) {
 			last_value_ = value_;
 			target_value_ = RandomGenerator::next(accent);
 			noise_.set(accent, Oscillator::segment_duration());
 		}
-
-		noise_state_ = noise_.tick();
 
 		return value_;
 	}
