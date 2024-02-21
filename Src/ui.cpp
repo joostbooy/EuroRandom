@@ -20,20 +20,7 @@ void Ui::debounce(SwitchId id, bool state) {
 	}
 }
 
-bool Ui::update_pots() {
-	if (adc.ready()) {
-		int channel = adc.curr_channel();
-		float in = adc.read() / 4095.f;
-		float out = pot_value_[channel];
-
-		pot_value_[channel] = Dsp::one_pole_filter(in, out, 0.05f);
-		adc.convert_next_channel();
-		return true;
-	}
-	return false;
-}
-
-void Ui::update_swiches() {
+void Ui::poll() {
 	sw_state_[RESET] = gateIo.read_reset();
 	sw_state_[BURST] = gateIo.read_burst();
 	sw_state_[TRIGGER] = gateIo.read_trigger();
@@ -41,6 +28,15 @@ void Ui::update_swiches() {
 	debounce(BURST_INSERT, gateIo.read_burst_insert());
 	debounce(TRIGGER_INSERT, gateIo.read_trigger_insert());
 	debounce(CLOCK, gateIo.read_clock());
+
+	if (adc.ready()) {
+		int channel = adc.curr_channel();
+		float in = adc.read() / 4095.f;
+		float out = pot_value_[channel];
+
+		pot_value_[channel] = Dsp::one_pole_filter(in, out, 0.05f);
+		adc.convert_next_channel();
+	}
 }
 
 void Ui::update_clock_led(uint32_t interval) {
