@@ -36,6 +36,14 @@ public:
 		}
 	}
 
+	void set_trigger_oscillator(bool state) {
+		trigger_oscillator_ = state;
+	}
+
+	void manual_trigger() {
+		pulse_.set(0, Oscillator::segment_duration());
+	}
+
 	bool pulse_state() {
 		return pulse_state_;
 	}
@@ -49,6 +57,7 @@ private:
 
 	Pulse pulse_;
 	bool pulse_state_;
+	bool trigger_oscillator_;
 
 	inline float next_sample() {
 		float phase_ = Oscillator::phase();
@@ -57,7 +66,7 @@ private:
 
 		pulse_state_ = pulse_.tick();
 
-		if (Oscillator::tick()) {
+		if (Oscillator::tick() && trigger_oscillator_) {
 			pulse_.set(Oscillator::has_accent(), Oscillator::segment_duration());
 		}
 
