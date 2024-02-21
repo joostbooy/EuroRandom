@@ -9,14 +9,12 @@ void Sys::init() {
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 	__HAL_RCC_GPIOC_CLK_ENABLE();
 
-
 	//Periparel Clock Enable
 	__HAL_RCC_DMA1_CLK_ENABLE();
 	__HAL_RCC_ADC1_CLK_ENABLE();
 	__HAL_RCC_SPI2_CLK_ENABLE();
 	__HAL_RCC_USART1_CLK_ENABLE();
-	__HAL_RCC_TIM2_CLK_ENABLE();
-
+	//__HAL_RCC_TIM2_CLK_ENABLE();
 
 	RCC_OscInitTypeDef RCC_OscInitStruct = {0};
 	RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
@@ -54,9 +52,6 @@ void Sys::init() {
 
 	// Interupt priorities
 	//HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
-	//HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);			// Engine tick
-	//HAL_NVIC_SetPriority(TIM3_IRQn, 1, 0);			// Engine update
-	//HAL_NVIC_SetPriority(TIM4_IRQn, 2, 0);			// Ui Poll
-	//HAL_NVIC_SetPriority(DMA2_Stream3_IRQn, 3, 0);	// SDIO
-	//HAL_NVIC_SetPriority(DMA1_Stream4_IRQn, 4, 0);	// LCD
+	//HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 0, 0);	// Dac
+	//HAL_NVIC_SetPriority(TIM2_IRQn, 1, 0);			// Ui Poll
 }
