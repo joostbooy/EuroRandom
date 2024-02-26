@@ -50,7 +50,7 @@ private:
 		int next;
 
 		phase_ += inc_;
-		next = total_ * (phase_ * phase_) * RandomGenerator::next(0.95f, 1.f);
+		next = total_ * (phase_ * phase_) * RandomGenerator::next(0.85f, 1.f);
 		next -= total_used_;
 		total_used_ += next;
 
