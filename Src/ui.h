@@ -41,8 +41,6 @@ public:
 	void poll();
 	float read_pot(PotId);
 	bool read_switch(SwitchId);
-	void reset_clock_led();
-	void update_clock_led(uint32_t);
 
 private:
 	static const size_t kNumDebounceSwitches = 3;

@@ -39,23 +39,10 @@ void Ui::poll() {
 	}
 }
 
-void Ui::update_clock_led(uint32_t interval) {
-	bool led_state = clock_led_ticks_ < (interval / 2);
-	gateIo.write_clock_led(led_state);
-
-	if (++clock_led_ticks_ >= interval) {
-		clock_led_ticks_ = 0;
-	}
-}
-
 float Ui::read_pot(PotId id) {
 	return pot_value_[id];
 }
 
 bool Ui::read_switch(SwitchId id) {
 	return sw_state_[id];
-}
-
-void Ui::reset_clock_led() {
-	clock_led_ticks_ = 0;
 }
