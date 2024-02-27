@@ -14,8 +14,8 @@ public:
 		last_tick_ = 0;
 
 		phase_ = 0.f;
-		inc_ = 1.f / 500;
-		set_interval(500);
+		inc_ = 1.f / kInitInterval;
+		set_interval(kInitInterval);
 	}
 
 	void reset() {
@@ -66,6 +66,7 @@ private:
 
 	static const uint32_t kMinInterval = (Dac::update_rate() / 1000.f) * 8.f;
 	static const uint32_t kMaxInterval = (Dac::update_rate() / 1000.f) * 2500.f;
+	static const uint32_t kInitInterval = (Dac::update_rate() / 1000.f) * 500.f;
 
 	void set_interval(uint32_t value) {
 		interval_ = value;
