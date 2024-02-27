@@ -12,7 +12,7 @@ public:
 	};
 
 	static constexpr size_t update_rate() {
-		return kSamplerate / kBlockSize;;
+		return kSamplerate / kBlockSize;
 	}
 
 	void init();
