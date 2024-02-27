@@ -12,8 +12,10 @@ public:
 		curr_state_ = 0;
 		last_state_ = 0;
 		last_tick_ = 0;
+
+		phase_ = 0.f;
+		inc_ = 1.f / 500;
 		set_interval(500);
-		reset();
 	}
 
 	void reset() {
