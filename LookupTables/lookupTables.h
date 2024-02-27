@@ -5,6 +5,7 @@
 
 #define EXP_TABLE_SIZE 1024
 
+extern const float lut_reciprocal[];
 extern const float lut_exp[];
 extern const float lut_inv_exp[];
 

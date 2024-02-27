@@ -8,6 +8,19 @@ import lutCompiler
 #table variables
 tables = []
 
+'''____________________
+	RECIPROCAL
+________________________'''
+name = 'reciprocal'
+
+max_steps = 16
+step = numpy.arange(1, max_steps + 1)
+values = 1.0 / step
+values = numpy.insert(values, 0, 0.0)
+
+tables.append('float ' + name)
+tables.append(values.astype('float32'))
+
 
 '''____________________
 	EXP TABLE
