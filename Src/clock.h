@@ -1,7 +1,9 @@
-#ifndef ClockReader_h
-#define ClockReader_h
+#ifndef Clock_h
+#define Clock_h
 
-class ClockReader {
+#include "dac.h"
+
+class Clock {
 
 public:
 
@@ -17,15 +19,19 @@ public:
 		external_phase_ = 0.f;
 	}
 
+	void reset() {
+		phase_ = 0.f;
+		external_phase_ = 0.f;
+	}
+
 	void tick(bool state) {
 		last_state_ = curr_state_;
 		curr_state_ = state;
 
 		if (curr_state_ == 1 && last_state_ == 0) {
 			uint32_t new_interval_ = curr_tick - last_tick_;
-			if (new_interval_ >= 8 && new_interval_ <= 2000) {
-				interval_ = new_interval_;
-				reset(interval_);
+			if (new_interval_ >= kMinInterval && new_interval_ <= kMaxInterval) {
+				set_interval(new_interval_);
 			}
 			last_tick_ = curr_tick;
 		}
@@ -42,6 +48,10 @@ public:
 		return inc_;
 	}
 
+	float phase() {
+		return phase_;
+	}
+
 private:
 	bool last_state_;
 	bool curr_state_;
@@ -55,8 +65,12 @@ private:
 	float external_inc_;
 	float external_phase_;
 
-	void reset(uint32_t interval) {
-		external_inc_ = 1.f / interval;
+	static const uint32_t kMinInterval = (Dac::update_rate() / 1000.f) * 8.f;
+	static const uint32_t kMaxInterval = (Dac::update_rate() / 1000.f) * 2500.f;
+
+	void set_interval(uint32_t value) {
+		interval_ = value;
+		external_inc_ = 1.f / value;
 		external_phase_ = 0.f;
 	}
 
