@@ -6,7 +6,7 @@
 #include "timer.h"
 
 #include "ui.h"
-#include "clockReader.h"
+#include "clock.h"
 #include "pulseOscillator.h"
 #include "triangleOscillator.h"
 #include "skewedOscillator.h"
@@ -15,7 +15,7 @@
 #include "burst.h"
 
 Ui ui;
-ClockReader clockReader;
+Clock clock;
 PulseOscillator pulseOscillator;
 TriangleOscillator triangleOscillator;
 SkewedOscillator skewedOscillator;
@@ -58,14 +58,14 @@ extern "C" {
 //}
 
 
-inline void update_pots(uint32_t ticks) {
+inline void update_pots(float inc, uint32_t ticks) {
 	float shifts = ui.read_pot(Ui::SHIFT);
 	float accents = ui.read_pot(Ui::ACCENTS);
 
-	triangleOscillator.update_segments(ticks, ui.read_pot(Ui::TRIANGLE_FILL), accents, shifts * 0.25f);
-	skewedOscillator.update_segments(ticks, ui.read_pot(Ui::SKEW_FILL), accents, shifts * 0.5f);
-	pulseOscillator.update_segments(ticks, ui.read_pot(Ui::PULSE_FILL), accents, shifts * 0.75f);
-	curvedOscillator.update_segments(ticks, ui.read_pot(Ui::CURVE_FILL), accents, shifts);
+	triangleOscillator.update_segments(inc, ticks, ui.read_pot(Ui::TRIANGLE_FILL), accents, shifts * 0.25f);
+	skewedOscillator.update_segments(inc, ticks, ui.read_pot(Ui::SKEW_FILL), accents, shifts * 0.5f);
+	pulseOscillator.update_segments(inc, ticks, ui.read_pot(Ui::PULSE_FILL), accents, shifts * 0.75f);
+	curvedOscillator.update_segments(inc, ticks, ui.read_pot(Ui::CURVE_FILL), accents, shifts);
 
 	triangleOscillator.set_depth(ui.read_pot(Ui::TRIANGLE_DEPTH));
 	skewedOscillator.set_amount(ui.read_pot(Ui::SKEW_AMMOUNT));
@@ -79,12 +79,11 @@ inline void update_switches() {
 	reset = ui.read_switch(Ui::RESET);
 
 	if (reset == 1 && last_reset == 0) {
+		clock.reset();
 		pulseOscillator.reset();
 		triangleOscillator.reset();
 		skewedOscillator.reset();
 		curvedOscillator.reset();
-
-		ui.reset_clock_led();
 	}
 
 	// update burst
@@ -110,23 +109,20 @@ inline void update_switches() {
 	}
 }
 
-inline uint32_t update_clock() {
-	clockReader.tick(ui.read_switch(Ui::CLOCK));
-	uint32_t interval = clockReader.interval();
-	ui.update_clock_led(interval);
-	return interval;
-}
-
 void fill(Dac::Buffer *buffer, const size_t size) {
 	// Update ui
 	if (++ui_prescaler & 1) {
 		ui.poll();
 	}
 
-	uint32_t interval = update_clock();
-	uint32_t ticks = size * interval;
-	update_pots(ticks);
+	// update clock
+	clock.tick(ui.read_switch(Ui::CLOCK));
+	float inc = clock.inc() / size;
+	uint32_t ticks = clock.interval() * size;
+
+	update_pots(inc, ticks);
 	update_switches();
+	gateIo.write_clock_led(clock.phase() < 0.5f);
 
 	// Update gate outs
 	gateIo.write_pulse(skewedOscillator.pulse_state());
@@ -150,7 +146,7 @@ int main(void)
 	debug.init();
 
 	ui.init();
-	clockReader.init();
+	clock.init();
 	pulseOscillator.init();
 	triangleOscillator.init();
 	skewedOscillator.init();
