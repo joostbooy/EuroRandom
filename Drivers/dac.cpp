@@ -2,9 +2,6 @@
 
 Dac dac;
 
-const uint32_t Dac::kSamplerate = 22000;
-const uint32_t Dac::kUpdateRate = Dac::kSamplerate / Dac::kBlockSize;
-
 void Dac::init() {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 

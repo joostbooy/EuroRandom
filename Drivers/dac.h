@@ -11,6 +11,10 @@ public:
 		uint16_t channel[4];
 	};
 
+	static constexpr size_t update_rate() {
+		return kSamplerate / kBlockSize;;
+	}
+
 	void init();
 	void start(void(*callback)(Buffer*, size_t));
 
@@ -26,10 +30,8 @@ public:
 		}
 	}
 
-	static const uint32_t kSamplerate;
-	static const uint32_t kUpdateRate;
-
 private:
+	static const size_t kSamplerate = 22000;
 	static const size_t kBlockSize = 16;
 	static const size_t kNumChannels = 4;
 	static const size_t kDmaBufferSize = kBlockSize * kNumChannels * 2;
