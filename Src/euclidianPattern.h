@@ -5,6 +5,8 @@ class EuclidianPattern {
 
 public:
 
+	static const size_t kMaxSteps = 16;
+
 	void init() {
 		update(kMaxSteps, kMaxSteps, 0);
 		reset();
@@ -39,26 +41,24 @@ public:
 		}
 	}
 
-	int next_duration() {
+	bool next_trigger() {
+		trigger_pos_ %= steps_;
+		return triggers_ & (1 << trigger_pos_++);
+	}
+
+	uint8_t next_duration() {
 		duration_pos_ %= pulses_;
 		return duration_[duration_pos_++];
 	}
 
-	bool next_trigger() {
-		++trigger_pos_ %= steps_;
-		return triggers_ & (1 << trigger_pos_);
-	}
-
 private:
-	static const size_t kMaxSteps = 16;
-
 	int steps_;
 	int shifts_;
 	int pulses_;
 	int duration_pos_;
 	int trigger_pos_;
 	int duration_[kMaxSteps];
-
+	
 	uint16_t triggers_;
 };
 
