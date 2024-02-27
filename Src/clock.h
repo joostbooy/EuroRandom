@@ -9,14 +9,11 @@ public:
 
 	void init() {
 		curr_tick = 0;
-
 		curr_state_ = 0;
 		last_state_ = 0;
 		last_tick_ = 0;
-		interval_ = 100;
-
-		phase_ = 0.f;
-		external_phase_ = 0.f;
+		set_interval(500);
+		reset();
 	}
 
 	void reset() {
