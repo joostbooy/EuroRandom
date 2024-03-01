@@ -1,7 +1,6 @@
 #ifndef Ui_h
 #define Ui_h
 
-#include "que.h"
 #include "adc.h"
 #include "dsp.h"
 #include "gateIo.h"
@@ -37,7 +36,7 @@ public:
 		NUM_POTS
 	};
 
-	void init();
+	void init(Adc *adc, GateIo *gateIo);
 	void poll();
 	float read_pot(PotId);
 	bool read_switch(SwitchId);
@@ -49,6 +48,9 @@ private:
 	bool sw_state_[NUM_SWITCHES];
 	uint8_t sw_raw_[kNumDebounceSwitches];
 	uint32_t clock_led_ticks_;
+
+	Adc *adc_;
+	GateIo *gateIo_;
 
 	void debounce(SwitchId, bool);
 };

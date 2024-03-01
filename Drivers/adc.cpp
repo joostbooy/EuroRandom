@@ -1,7 +1,5 @@
 #include "adc.h"
 
-Adc adc;
-
 void Adc::init(){
 	ADC_HandleTypeDef hadc1;
 	GPIO_InitTypeDef GPIO_InitStruct = {0};

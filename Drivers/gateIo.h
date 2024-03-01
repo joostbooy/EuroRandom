@@ -61,6 +61,4 @@ private:
 
 };
 
-extern GateIo gateIo;
-
 #endif

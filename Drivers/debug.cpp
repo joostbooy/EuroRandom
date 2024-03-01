@@ -1,7 +1,5 @@
 #include "debug.h"
 
-Debug debug;
-
 void Debug::init() {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 

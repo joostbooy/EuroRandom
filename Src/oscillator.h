@@ -14,7 +14,8 @@ public:
 		inc_ = 0.1;
 		phase_ = 0.f;
 		accent_ = 0;
-		segment_ticks_ = 16000;
+		duration_ = 1;
+		segment_ticks_ = 500;
 
 		euclidianPattern_.init();
 		euclidianAccentPattern_.init();
@@ -49,7 +50,7 @@ public:
 	bool has_accent() {
 		return accent_;
 	}
-
+	
 	bool tick() {
 		phase_ += inc_ * lut_reciprocal[duration_];
 

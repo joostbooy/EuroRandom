@@ -12,6 +12,4 @@ private:
 
 };
 
-extern Timer timer;
-
 #endif

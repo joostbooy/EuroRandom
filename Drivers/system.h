@@ -3,12 +3,10 @@
 
 #include "stm32f3xx.h"
 
-class Sys{
+class Sys {
 
 public:
     void init();
 };
-
-extern Sys sys;
 
 #endif

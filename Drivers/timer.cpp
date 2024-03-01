@@ -1,7 +1,5 @@
 #include "timer.h"
 
-Timer timer;
-
 void Timer::start(uint32_t freq){
 	TIM_HandleTypeDef TimHandle;
 

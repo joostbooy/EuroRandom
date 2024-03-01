@@ -24,6 +24,4 @@ private:
 	uint8_t toggle_state = 0;
 };
 
-extern Debug debug;
-
 #endif

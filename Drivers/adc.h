@@ -52,6 +52,4 @@ private:
 	}
 };
 
-extern Adc adc;
-
 #endif

@@ -1,8 +1,11 @@
 #include "dac.h"
 
-Dac dac;
+Dac* Dac::dac_;
 
 void Dac::init() {
+
+	dac_ = this;
+
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 
 	/**I2S2 GPIO Configuration
@@ -25,7 +28,7 @@ void Dac::init() {
 	hi2s2.Init.Standard = I2S_STANDARD_PHILIPS;
 	hi2s2.Init.DataFormat = I2S_DATAFORMAT_32B;
 	hi2s2.Init.MCLKOutput = I2S_MCLKOUTPUT_DISABLE;
-	hi2s2.Init.AudioFreq = I2S_AUDIOFREQ_22K;
+	hi2s2.Init.AudioFreq = I2S_AUDIOFREQ_16K;
 	hi2s2.Init.CPOL = I2S_CPOL_LOW;
 	hi2s2.Init.ClockSource = I2S_CLOCK_SYSCLK;
 	hi2s2.Init.FullDuplexMode = I2S_FULLDUPLEXMODE_DISABLE;
@@ -61,9 +64,9 @@ extern "C" {
 		DMA1->IFCR |= DMA_IFCR_CTCIF5 | DMA_IFCR_CHTIF5;
 
 		if (flags & DMA_ISR_TCIF5) {
-			dac.fill(1);
+			Dac::dac_->fill(1);
 		} else if (flags & DMA_ISR_HTIF5) {
-			dac.fill(0);
+			Dac::dac_->fill(0);
 		}
 	}
 }

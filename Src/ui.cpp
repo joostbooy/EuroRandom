@@ -1,6 +1,9 @@
 #include "ui.h"
 
-void Ui::init() {
+void Ui::init(Adc *adc, GateIo *gateIo) {
+	adc_ = adc;
+	gateIo_ = gateIo_;
+
 	clock_led_ticks_ = 0;
 
 	std::fill(&sw_state_[0], &sw_state_[NUM_SWITCHES], 0);
@@ -21,21 +24,21 @@ void Ui::debounce(SwitchId id, bool state) {
 }
 
 void Ui::poll() {
-	sw_state_[RESET] = gateIo.read_reset();
-	sw_state_[BURST] = gateIo.read_burst();
-	sw_state_[TRIGGER] = gateIo.read_trigger();
+	sw_state_[RESET] = gateIo_->read_reset();
+	sw_state_[BURST] = gateIo_->read_burst();
+	sw_state_[TRIGGER] = gateIo_->read_trigger();
 
-	debounce(BURST_INSERT, gateIo.read_burst_insert());
-	debounce(TRIGGER_INSERT, gateIo.read_trigger_insert());
-	debounce(CLOCK, gateIo.read_clock());
+	debounce(BURST_INSERT, gateIo_->read_burst_insert());
+	debounce(TRIGGER_INSERT, gateIo_->read_trigger_insert());
+	debounce(CLOCK, gateIo_->read_clock());
 
-	if (adc.ready()) {
-		int channel = adc.curr_channel();
-		float in = adc.read() / 4095.f;
+	if (adc_->ready()) {
+		int channel = adc_->curr_channel();
+		float in = adc_->read() / 4095.f;
 		float out = pot_value_[channel];
 
 		pot_value_[channel] = Dsp::one_pole_filter(in, out, 0.05f);
-		adc.convert_next_channel();
+		adc_->convert_next_channel();
 	}
 }
 

@@ -12,7 +12,11 @@
 #include "skewedOscillator.h"
 #include "curvedOscillator.h"
 
-#include "burst.h"
+Sys sys;
+Adc adc;
+Dac dac;
+Debug debug;
+GateIo gateIo;
 
 Ui ui;
 Clock clock;
@@ -110,21 +114,21 @@ inline void update_switches() {
 }
 
 void fill(Dac::Buffer *buffer, const size_t size) {
-	// Update ui
-	if (++ui_prescaler & 1) {
-		ui.poll();
-	}
+	debug.write(1);
 
+	// Update ui
+	ui.poll();
+
+	update_switches();
 	// update clock
 	clock.tick(ui.read_switch(Ui::CLOCK));
-	float inc = clock.inc() / size;
 	uint32_t ticks = clock.interval() * size;
+	float inc = clock.inc() * (1.f / size);
 
 	update_pots(inc, ticks);
-	update_switches();
-	gateIo.write_clock_led(clock.phase() < 0.5f);
 
 	// Update gate outs
+	gateIo.write_clock_led(clock.phase() < 0.5f);
 	gateIo.write_pulse(skewedOscillator.pulse_state());
 	gateIo.write_gate(triangleOscillator.gate_state());
 	gateIo.write_burst(pulseOscillator.burst_state());
@@ -135,6 +139,8 @@ void fill(Dac::Buffer *buffer, const size_t size) {
 	triangleOscillator.fill(&buffer[0].channel[1], 4, size);	// Triangle
 	skewedOscillator.fill(&buffer[0].channel[2], 4, size);		// Skewed
 	curvedOscillator.fill(&buffer[0].channel[3], 4, size);		// Curved
+
+	debug.write(0);
 }
 
 int main(void)
@@ -145,7 +151,8 @@ int main(void)
 	gateIo.init();
 	debug.init();
 
-	ui.init();
+	ui.init(&adc, &gateIo);
+
 	clock.init();
 	pulseOscillator.init();
 	triangleOscillator.init();
