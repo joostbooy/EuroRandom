@@ -16,7 +16,7 @@ public:
 
 	void set(bool accent, uint32_t duration) {
 		duration_ = 0;
-		total_ = duration_;
+		total_ = duration;
 		max_ = accent ? 0.05f : 0.5f;
 	}
 
