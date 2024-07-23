@@ -2,7 +2,7 @@
 
 Dac* Dac::dac_;
 
-void Dac::init() {
+void Dac::init(Debug *debug) {
 
 	dac_ = this;
 
@@ -13,31 +13,32 @@ void Dac::init() {
 	PB13     ------> I2S2_CK
 	PB15     ------> I2S2_SD
 	*/
+
 	GPIO_InitStruct.Pin = GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_15;
 	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 	GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-	/* I2S Init */
+
 	I2S_HandleTypeDef hi2s2;
 
 	hi2s2.Instance = SPI2;
 	hi2s2.Init.Mode = I2S_MODE_MASTER_TX;
-	hi2s2.Init.Standard = I2S_STANDARD_PHILIPS;
+	hi2s2.Init.Standard = I2S_STANDARD_PCM_SHORT;
 	hi2s2.Init.DataFormat = I2S_DATAFORMAT_32B;
 	hi2s2.Init.MCLKOutput = I2S_MCLKOUTPUT_DISABLE;
-	hi2s2.Init.AudioFreq = I2S_AUDIOFREQ_16K;
+	hi2s2.Init.AudioFreq = I2S_AUDIOFREQ_16K * kNumChannels; // 64000
 	hi2s2.Init.CPOL = I2S_CPOL_LOW;
-	hi2s2.Init.ClockSource = I2S_CLOCK_SYSCLK;
+	hi2s2.Init.ClockSource = I2S_CLOCK_PLL;
 	hi2s2.Init.FullDuplexMode = I2S_FULLDUPLEXMODE_DISABLE;
 	HAL_I2S_Init(&hi2s2);
+	__HAL_I2S_ENABLE(&hi2s2);
 
-	/* I2S2 DMA Init */
 	DMA_HandleTypeDef hdma_spi2_tx;
 
-	hdma_spi2_tx.Instance = DMA1_Channel5;
+	//hdma_spi2_tx.Instance = DMA1_Channel4;
 	hdma_spi2_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
 	hdma_spi2_tx.Init.PeriphInc = DMA_PINC_DISABLE;
 	hdma_spi2_tx.Init.MemInc = DMA_MINC_ENABLE;
@@ -48,24 +49,24 @@ void Dac::init() {
 	HAL_DMA_Init(&hdma_spi2_tx);
 	__HAL_LINKDMA(&hi2s2, hdmatx, hdma_spi2_tx);
 	HAL_I2S_Transmit_DMA(&hi2s2, (uint16_t*)dma_buffer_, kDmaBufferSize);
+
 }
 
 void Dac::start(void (*callback)(Buffer*, size_t)) {
 	callback_ = callback;
-	HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
-	HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 0, 0);
-	HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
+	HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_2);
+	HAL_NVIC_SetPriority(DMA1_Stream4_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(DMA1_Stream4_IRQn);
 }
-
 
 extern "C" {
 	void DMA1_Channel5_IRQHandler(void) {
-		uint32_t flags = DMA1->ISR;
-		DMA1->IFCR |= DMA_IFCR_CTCIF5 | DMA_IFCR_CHTIF5;
+		uint32_t flags = DMA1->LISR;
+		DMA1->LIFCR |= DMA_HIFCR_CTCIF5 | DMA_HIFCR_CHTIF5;
 
-		if (flags & DMA_ISR_TCIF5) {
+		if (flags & DMA_HISR_TCIF5) {
 			Dac::dac_->fill(1);
-		} else if (flags & DMA_ISR_HTIF5) {
+		} else if (flags & DMA_HISR_HTIF5) {
 			Dac::dac_->fill(0);
 		}
 	}

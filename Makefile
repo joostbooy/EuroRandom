@@ -16,7 +16,7 @@ OPT = -O2
 
 BUILD_DIR = Build
 
-STM_REPO = /Users/joostbooy/STM32Cube/Repository/STM32Cube_FW_F3_V1.11.4
+STM_REPO = /Users/joostbooy/STM32Cube/Repository/STM32Cube_FW_F4_V1.26.2
 UTILS_DIR = /Users/joostbooy/Desktop/Code/stm32/lib/utils
 TABLE_DIR = LookupTables
 
@@ -25,18 +25,17 @@ TABLE_DIR = LookupTables
 # model specifics
 #######################################
 
-#DSTM32F301xx
-MODEL_DEF = -DSTM32F301x8
-F_CPU = 72000000UL
+MODEL_DEF = -DSTM32F401xE
+F_CPU = 84000000UL
 
 CMSIS_DIR = $(STM_REPO)/Drivers/CMSIS
-HAL_DIR = $(STM_REPO)/Drivers/STM32F3xx_HAL_Driver
-DEVICE_DIR = $(CMSIS_DIR)/Device/ST/STM32F3xx
+HAL_DIR = $(STM_REPO)/Drivers/STM32F4xx_HAL_Driver
+DEVICE_DIR = $(CMSIS_DIR)/Device/ST/STM32F4xx
 
 CPU = -mcpu=cortex-m4
-LDSCRIPT = stm32/STM32F301C8Tx_FLASH.ld
-STARTUP = stm32/startup_stm32f301x8.s
-SYSTEM = $(DEVICE_DIR)/Source/Templates/system_stm32f3xx.c
+LDSCRIPT = stm32/STM32F401RETx_FLASH.ld
+STARTUP = stm32/startup_stm32f401xe.s
+SYSTEM = $(DEVICE_DIR)/Source/Templates/system_stm32f4xx.c
 
 FPU = -mfpu=fpv4-sp-d16
 FLOAT_ABI = -mfloat-abi=hard
@@ -65,7 +64,7 @@ $(wildcard Src/*.cpp) \
 $(wildcard Drivers/*.cpp) \
 $(wildcard Drivers/Usb/*.cpp) \
 $(wildcard LookupTables/*.cpp) \
-$(wildcard $(UTILS_DIR)/*.cpp) 
+$(wildcard $(UTILS_DIR)/*.cpp)
 
 # ASM sources
 ASM_SOURCES =  \
@@ -149,9 +148,9 @@ $(OPT) \
 -fno-unwind-tables \
 -fno-move-loop-invariants \
 -MMD -MP -MF"$(@:%.o=%.d)"
+#-Wfatal-errors
 #-fasm
 #-flto
-#-Wfatal-errors
 
 # CPP flags
 CPPFLAGS = \

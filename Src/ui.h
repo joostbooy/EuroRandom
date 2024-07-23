@@ -4,6 +4,7 @@
 #include "adc.h"
 #include "dsp.h"
 #include "gateIo.h"
+#include <algorithm>
 
 class Ui {
 

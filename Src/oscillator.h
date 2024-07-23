@@ -50,7 +50,7 @@ public:
 	bool has_accent() {
 		return accent_;
 	}
-	
+
 	bool tick() {
 		phase_ += inc_ * lut_reciprocal[duration_];
 

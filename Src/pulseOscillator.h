@@ -3,7 +3,6 @@
 
 #include "burst.h"
 #include "oscillator.h"
-#include "rng.h"
 
 class PulseOscillator : public Oscillator {
 
@@ -15,6 +14,7 @@ public:
 		width_ = 0.f;
 
 		burst_state_ = 0;
+		burst_oscillator_ = 0;
 		burst_.init();
 		Oscillator::init();
 	}
@@ -76,6 +76,43 @@ private:
 
 		return value_;
 	}
+
+/*
+	inline float next_sample() {
+		bool accent;
+		float phase;
+		bool burst_state;
+
+		float value = value_;
+		float width = width_;
+		bool stage = stage_;
+
+		while (size--) {
+			accent = Oscillator::has_accent();
+			phase = Oscillator::phase();
+
+			if ((phase < width) && (stage != 0)) {
+				stage = 0;
+				value = RandomGenerator::next(accent);
+			} else if ((phase >= width_) && (stage_ != 1)) {
+				stage = 1;
+				value = RandomGenerator::next(accent);
+			}
+
+			burst_state_ = burst_.tick();
+
+			if (Oscillator::tick() && burst_oscillator_) {
+				burst_.set(accent, Oscillator::segment_duration());
+			}
+
+			*buffer++ = value;
+		}
+
+		value_ = value;
+		stage_= stage;
+		burst_state_ = burst_state;
+	}
+	*/
 };
 
 #endif

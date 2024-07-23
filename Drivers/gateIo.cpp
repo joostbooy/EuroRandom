@@ -28,7 +28,7 @@ void GateIo::init() {
 	PC13    ------> Clock in
 	PC14    ------> Prob detect in
 	PC15	------> Prob in
-	PB14	------> Reset in
+	PB4		------> Reset in
 	PB5		------> Burst detect in
 	PB8		------> Burst in
 	*/
@@ -38,7 +38,7 @@ void GateIo::init() {
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-	GPIO_InitStruct.Pin = GPIO_PIN_14 | GPIO_PIN_5 | GPIO_PIN_8;
+	GPIO_InitStruct.Pin = GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_8;
 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;

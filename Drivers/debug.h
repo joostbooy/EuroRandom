@@ -1,7 +1,7 @@
 #ifndef debug_h
 #define debug_h
 
-#include "stmf3lib.h"
+#include "stm32f4xx.h"
 
 class Debug {
 

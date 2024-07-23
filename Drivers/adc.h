@@ -1,7 +1,7 @@
 #ifndef adc_h
 #define adc_h
 
-#include "stmf3lib.h"
+#include "stm32f4xx.h"
 
 
 class Adc {
@@ -10,7 +10,7 @@ public:
 	void init();
 
 	inline bool ready() {
-		return ADC1->ISR & ADC_ISR_EOC;
+		return ADC1->SR & ADC_SR_EOC;
 	}
 
 	inline uint16_t read() {
@@ -28,14 +28,15 @@ public:
 
 		if (channel_ < kNumMuxChannels) {
 			set_mux_channel(channel_);
-			ADC1->SQR3 = ADC_CHANNEL_11;
+			ADC1->SQR3 = ADC_CHANNEL_8;
 		} else if (channel_ == 8) {
-			ADC1->SQR3 = ADC_CHANNEL_3;
+			ADC1->SQR3 = ADC_CHANNEL_2;
 		} else {
-			ADC1->SQR3 = ADC_CHANNEL_10;
+			ADC1->SQR3 = ADC_CHANNEL_6;
 		}
 
-		ADC1->CR |= ADC_CR_ADSTART;
+		// FIX ME !!!
+		//ADC1->CR2 |= ADC_CR2_ADSTART;
 	}
 
 private:

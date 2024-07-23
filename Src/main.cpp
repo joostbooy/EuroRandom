@@ -42,6 +42,9 @@ extern "C" {
 	void PendSV_Handler() { }
 	void SysTick_Handler(void) { }
 
+	//	void SysTick_Handler(void) {
+	//		HAL_IncTick();
+	//	}
 } //extern "C"
 
 
@@ -61,20 +64,30 @@ extern "C" {
 //	ui.poll();
 //}
 
-
 inline void update_pots(float inc, uint32_t ticks) {
 	float shifts = ui.read_pot(Ui::SHIFT);
 	float accents = ui.read_pot(Ui::ACCENTS);
 
-	triangleOscillator.update_segments(inc, ticks, ui.read_pot(Ui::TRIANGLE_FILL), accents, shifts * 0.25f);
-	skewedOscillator.update_segments(inc, ticks, ui.read_pot(Ui::SKEW_FILL), accents, shifts * 0.5f);
-	pulseOscillator.update_segments(inc, ticks, ui.read_pot(Ui::PULSE_FILL), accents, shifts * 0.75f);
-	curvedOscillator.update_segments(inc, ticks, ui.read_pot(Ui::CURVE_FILL), accents, shifts);
+	//triangleOscillator.update_segments(inc, ticks, ui.read_pot(Ui::TRIANGLE_FILL), accents, shifts * 0.25f);
+	//skewedOscillator.update_segments(inc, ticks, ui.read_pot(Ui::SKEW_FILL), accents, shifts * 0.5f);
+	//pulseOscillator.update_segments(inc, ticks, ui.read_pot(Ui::PULSE_FILL), accents, shifts * 0.75f);
+	//curvedOscillator.update_segments(inc, ticks, ui.read_pot(Ui::CURVE_FILL), accents, shifts);
 
-	triangleOscillator.set_depth(ui.read_pot(Ui::TRIANGLE_DEPTH));
-	skewedOscillator.set_amount(ui.read_pot(Ui::SKEW_AMMOUNT));
-	pulseOscillator.set_width(ui.read_pot(Ui::PULSE_WIDTH));
-	curvedOscillator.set_shape(ui.read_pot(Ui::CURVE_SHAPE));
+	triangleOscillator.update_segments(inc, ticks, 0.5f, accents, shifts * 0.25f);
+	skewedOscillator.update_segments(inc, ticks, 0.5f, accents, shifts * 0.5f);
+	pulseOscillator.update_segments(inc, ticks, 0.5f, accents, shifts * 0.75f);
+	curvedOscillator.update_segments(inc, ticks, 0.5f, accents, shifts);
+
+	//	triangleOscillator.set_depth(ui.read_pot(Ui::TRIANGLE_DEPTH));
+	//	skewedOscillator.set_amount(ui.read_pot(Ui::SKEW_AMMOUNT));
+	//	pulseOscillator.set_width(ui.read_pot(Ui::PULSE_WIDTH));
+	//	curvedOscillator.set_shape(ui.read_pot(Ui::CURVE_SHAPE));
+
+	triangleOscillator.set_depth(0.5f);
+	skewedOscillator.set_amount( 0.5f);
+	pulseOscillator.set_width( 0.5f);
+	curvedOscillator.set_shape( 0.5f);
+
 }
 
 inline void update_switches() {
@@ -95,9 +108,9 @@ inline void update_switches() {
 	burst = ui.read_switch(Ui::BURST);
 
 	bool burst_insert = ui.read_switch(Ui::BURST_INSERT);
-	pulseOscillator.set_burst_oscillator(burst_insert);
+	pulseOscillator.set_burst_oscillator(!burst_insert);
 
-	if (burst_insert && burst == 1 && last_burst == 0) {
+	if (burst_insert == 1 && burst == 1 && last_burst == 0) {
 		pulseOscillator.manual_burst();
 	}
 
@@ -106,20 +119,47 @@ inline void update_switches() {
 	trigger = ui.read_switch(Ui::TRIGGER);
 
 	bool trigger_insert = ui.read_switch(Ui::TRIGGER_INSERT);
-	skewedOscillator.set_trigger_oscillator(trigger_insert);
+	skewedOscillator.set_trigger_oscillator(!trigger_insert);
 
-	if (trigger_insert && trigger == 1 && last_trigger == 0) {
+	if (trigger_insert == 1 && trigger == 1 && last_trigger == 0) {
 		skewedOscillator.manual_trigger();
+	}
+}
+
+
+volatile uint16_t phase = 0;
+volatile const uint16_t inc = (1 << 14) / 1000;
+
+void test(Dac::Buffer *buffer, const size_t size) {
+	gateIo.write_clock_led(1);
+	gateIo.write_pulse(1);
+	gateIo.write_gate(1);
+	gateIo.write_burst(1);
+	gateIo.write_noise(1);
+
+
+	for (size_t i = 0; i < size; ++i) {
+		buffer[i].channel[0] = phase;
+		buffer[i].channel[1] = 16383 - phase;
+		buffer[i].channel[2] = phase;
+		buffer[i].channel[3] = 16383 - phase;
+
+		++phase;
+		if (phase >= 16383) {
+			phase = 0;
+		}
 	}
 }
 
 void fill(Dac::Buffer *buffer, const size_t size) {
 	debug.write(1);
 
-	// Update ui
+	// Update UI at 1kHz
+	//if ((++ui_prescaler & 3) == 0) {
 	ui.poll();
-
 	update_switches();
+	//}
+
 	// update clock
 	clock.tick(ui.read_switch(Ui::CLOCK));
 	uint32_t ticks = clock.interval() * size;
@@ -143,13 +183,17 @@ void fill(Dac::Buffer *buffer, const size_t size) {
 	debug.write(0);
 }
 
+volatile uint16_t prescaler = 0;
+volatile int value = 0;
+
 int main(void)
 {
+	//HAL_Init();
 	sys.init();
 	adc.init();
-	dac.init();
 	gateIo.init();
 	debug.init();
+	dac.init(&debug);
 
 	ui.init(&adc, &gateIo);
 
@@ -160,8 +204,17 @@ int main(void)
 	curvedOscillator.init();
 
 	dac.start(&fill);
+	//dac.start(&test);
 
 	while (1) {
-
+	//	if ((++prescaler & 63) == 0) {
+	//		dac.write(0, value);
+	//		dac.write(1, 16383 - value);
+	//		dac.write(2, value);
+	//		dac.write(3, 16383 - value);
+	//		if (++value >= 16383) {
+	//			value = 0;
+	//		}
+	//	}
 	}
 }

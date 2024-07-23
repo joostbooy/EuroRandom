@@ -1,7 +1,7 @@
 #ifndef GateIo_h
 #define GateIo_h
 
-#include "stmf3lib.h"
+#include "stm32f4xx.h"
 
 class GateIo {
 
@@ -20,7 +20,7 @@ public:
 	}
 
 	bool read_reset() {
-		return !(GPIOB->IDR & GPIO_PIN_14);
+		return !(GPIOB->IDR & GPIO_PIN_4);
 	}
 
 	bool read_burst() {

@@ -1,6 +1,8 @@
 #ifndef EuclidianPattern_h
 #define EuclidianPattern_h
 
+#include "Utils.h"
+
 class EuclidianPattern {
 
 public:
@@ -18,9 +20,9 @@ public:
 	}
 
 	void update(int steps, int pulses, int shifts) {
-		steps_ = stmlib::clip(2, kMaxSteps - 1, steps);
-		pulses_ = stmlib::clip(1, steps_, pulses);
-		shifts_ = stmlib::clip(0, pulses_, shifts);
+		steps_ = Utils::clip(2, kMaxSteps - 1, steps);
+		pulses_ = Utils::clip(1, steps_, pulses);
+		shifts_ = Utils::clip(0, pulses_, shifts);
 
 		int count = 0;
 		int bucket = 0;
@@ -58,7 +60,7 @@ private:
 	int duration_pos_;
 	int trigger_pos_;
 	int duration_[kMaxSteps];
-	
+
 	uint16_t triggers_;
 };
 
