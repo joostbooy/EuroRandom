@@ -41,7 +41,7 @@ public:
 
 private:
 	static constexpr float kAccentRange = 0.1f;
-	static constexpr float kDeadBand = 0.2f;
+	static constexpr float kDeadBand = 0.25f;
 	static constexpr float kMin = kAccentRange + kDeadBand;
 	static constexpr float kMax = 1.f - (kAccentRange + kDeadBand);
 

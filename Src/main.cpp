@@ -74,7 +74,7 @@ inline void update_switches() {
 	burst = ui.read_switch(Ui::BURST);
 
 	bool burst_insert = ui.read_switch(Ui::BURST_INSERT);
-	pulseOscillator.set_burst_oscillator(!burst_insert);
+	pulseOscillator.set_burst_oscillator(burst_insert);
 
 	if (burst_insert == 1 && burst == 1 && last_burst == 0) {
 		pulseOscillator.manual_burst();
@@ -85,7 +85,7 @@ inline void update_switches() {
 	trigger = ui.read_switch(Ui::TRIGGER);
 
 	bool trigger_insert = ui.read_switch(Ui::TRIGGER_INSERT);
-	skewedOscillator.set_trigger_oscillator(!trigger_insert);
+	skewedOscillator.set_trigger_oscillator(trigger_insert);
 
 	if (trigger_insert == 1 && trigger == 1 && last_trigger == 0) {
 		skewedOscillator.manual_trigger();

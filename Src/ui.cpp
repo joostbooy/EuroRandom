@@ -16,9 +16,9 @@ void Ui::debounce(SwitchId id, bool state) {
 		sw_raw_[id] |= 1;
 	}
 
-	if (sw_raw_[id] == 0x80) {
+	if (sw_raw_[id] == 0x7F) {	//0x01, 0x80
 		sw_state_[id] = 1;
-	} else if (sw_raw_[id] == 0x01) {
+	} else if (sw_raw_[id] == 0xFE) {  //0x01
 		sw_state_[id] = 0;
 	}
 }
