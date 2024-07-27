@@ -35,8 +35,7 @@ public:
 			ADC1->SQR3 = ADC_CHANNEL_6;
 		}
 
-		// FIX ME !!!
-		//ADC1->CR2 |= ADC_CR2_ADSTART;
+		ADC1->CR2 |= ADC_CR2_SWSTART;
 	}
 
 private:
