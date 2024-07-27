@@ -26,7 +26,6 @@ CurvedOscillator curvedOscillator;
 bool burst = 0;
 bool reset = 0;
 bool trigger = 0;
-uint8_t ui_prescaler = 0;
 
 extern "C" {
 
@@ -93,42 +92,12 @@ inline void update_switches() {
 	}
 }
 
-
-volatile uint16_t phase = 0;
-volatile const uint16_t inc = (1 << 16) / 1000;
-
-void test(Dac::Buffer *buffer, const size_t size) {
-	Debug::write(1);
-
-	gateIo.write_clock_led(1);
-	gateIo.write_pulse(1);
-	gateIo.write_gate(1);
-	gateIo.write_burst(1);
-	gateIo.write_noise(1);
-
-	for (size_t i = 0; i < size; ++i) {
-		buffer[i].channel[0] = phase;
-		buffer[i].channel[1] = 65535 - phase;
-		buffer[i].channel[2] = 0;
-		buffer[i].channel[3] = 65535;
-
-		phase += inc;
-		if (phase >= 65535) {
-			phase = 0;
-		}
-	}
-
-	Debug::write(0);
-}
-
 void fill(Dac::Buffer *buffer, const size_t size) {
 	Debug::write(1);
 
 	// Update UI at 1kHz
-	//if ((++ui_prescaler & 3) == 0) {
 	ui.poll();
 	update_switches();
-	//}
 
 	// update clock
 	clock.tick(ui.read_switch(Ui::CLOCK));
