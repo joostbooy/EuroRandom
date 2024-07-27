@@ -6,22 +6,22 @@
 class Debug {
 
 public:
-    void init();
+    static void init();
 
-	inline bool read() {
+	static inline bool read() {
 		return GPIOB->IDR & GPIO_PIN_7;
 	}
 
-	inline void write(bool state) {
+	static inline void write(bool state) {
         GPIOB->BSRR = state ? GPIO_PIN_6 : GPIO_PIN_6 << 16;
     }
 
-    inline void toggle() {
+    static inline void toggle() {
 		(toggle_state ^= 1) ? write(1) : write(0);
     }
 
 private:
-	uint8_t toggle_state = 0;
+	static uint8_t toggle_state;
 };
 
 #endif
