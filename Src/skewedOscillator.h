@@ -31,7 +31,7 @@ public:
 
 	void fill(uint16_t *data, const size_t inc, const size_t size) {
 		for (size_t i = 0; i < size; ++i){
-			*data = next_sample() * 16383;
+			*data = next_sample() * 65535;
 			data += inc;
 		}
 	}
