@@ -2,7 +2,7 @@
 
 Dac* Dac::dac_;
 
-void Dac::init(Debug *debug) {
+void Dac::init() {
 
 	dac_ = this;
 
@@ -38,7 +38,7 @@ void Dac::init(Debug *debug) {
 
 	DMA_HandleTypeDef hdma_spi2_tx;
 
-	//hdma_spi2_tx.Instance = DMA1_Channel4;
+	hdma_spi2_tx.Instance = DMA1_Stream4;
 	hdma_spi2_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
 	hdma_spi2_tx.Init.PeriphInc = DMA_PINC_DISABLE;
 	hdma_spi2_tx.Init.MemInc = DMA_MINC_ENABLE;
@@ -46,10 +46,10 @@ void Dac::init(Debug *debug) {
 	hdma_spi2_tx.Init.MemDataAlignment = DMA_PDATAALIGN_HALFWORD;
 	hdma_spi2_tx.Init.Mode = DMA_CIRCULAR;
 	hdma_spi2_tx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+	hdma_spi2_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
 	HAL_DMA_Init(&hdma_spi2_tx);
 	__HAL_LINKDMA(&hi2s2, hdmatx, hdma_spi2_tx);
 	HAL_I2S_Transmit_DMA(&hi2s2, (uint16_t*)dma_buffer_, kDmaBufferSize);
-
 }
 
 void Dac::start(void (*callback)(Buffer*, size_t)) {
@@ -60,13 +60,13 @@ void Dac::start(void (*callback)(Buffer*, size_t)) {
 }
 
 extern "C" {
-	void DMA1_Channel5_IRQHandler(void) {
-		uint32_t flags = DMA1->LISR;
-		DMA1->LIFCR |= DMA_HIFCR_CTCIF5 | DMA_HIFCR_CHTIF5;
+	void DMA1_Stream4_IRQHandler(void) {
+		uint32_t flags = DMA1->HISR;
+		DMA1->HIFCR |= DMA_HIFCR_CTCIF4 | DMA_HIFCR_CHTIF4;
 
-		if (flags & DMA_HISR_TCIF5) {
+		if (flags & DMA_HISR_TCIF4) {
 			Dac::dac_->fill(1);
-		} else if (flags & DMA_HISR_HTIF5) {
+		} else if (flags & DMA_HISR_HTIF4) {
 			Dac::dac_->fill(0);
 		}
 	}

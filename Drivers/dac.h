@@ -13,13 +13,12 @@ public:
 	};
 
 	static Dac *dac_;
-	Debug *debug_;
 
 	static constexpr size_t update_rate() {
 		return kSamplerate / kBlockSize / kNumChannels;
 	}
 
-	void init(Debug *debug);
+	void init();
 	void start(void(*callback)(Buffer*, size_t));
 
 	void fill(const size_t offset) {
